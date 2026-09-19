@@ -1,0 +1,46 @@
+graph TD
+    %% Current State
+    subgraph Current ["🚀 Current State"]
+        CS1[Next.js App Router]
+        CS2[Supabase SSR]
+        CS3[Task/Habit CRUD]
+        CS4[i18n Framework]
+        CS5[Developer Standards]
+    end
+
+    %% Short Term
+    subgraph ShortTerm ["🛠️ Immediate Next Steps"]
+        ST1[UI/UX Polish]
+        ST2[Advanced Tasks: Tags/Priority]
+        ST3[Habit Analytics: Streaks]
+        ST4[Expanded Language Support]
+    end
+
+    %% Mid Term
+    subgraph MidTerm ["📈 Growth Phase"]
+        MT1[Calendar View]
+        MT2[Markdown Notes]
+        MT3[User Profiles]
+        MT4[Notifications Engine]
+    end
+
+    %% Ideas
+    subgraph Ideas ["💡 Innovations"]
+        I1[AI Life Coach]
+        I2[Gamification]
+        I3[Smart Scheduling]
+        I4[PWA Sync]
+        I5[Life Audit Reports]
+        I6[Voice Interface]
+        I7[External Integrations]
+    end
+
+    %% Flow
+    Current --> ShortTerm
+    ShortTerm --> MidTerm
+    MidTerm --> Ideas
+
+    style Current fill:#f9f,stroke:#333,stroke-width:2px
+    style ShortTerm fill:#bbf,stroke:#333,stroke-width:2px
+    style MidTerm fill:#bfb,stroke:#333,stroke-width:2px
+    style Ideas fill:#fff4dd,stroke:#d4a017,stroke-width:2px

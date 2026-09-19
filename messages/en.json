@@ -1,0 +1,58 @@
+{
+  "Common": {
+    "navigation": {
+      "tasks": "Tasks",
+      "habits": "Habits"
+    },
+    "actions": {
+      "delete": "Delete"
+    }
+  },
+  "Dashboard": {
+    "greeting": "Hello, {email}",
+    "tasks_title": "Today's Tasks",
+    "tasks_empty": "No tasks for today!",
+    "habits_title": "Daily Habits",
+    "habits_empty": "No habits defined yet.",
+    "mark_done": "Mark Done",
+    "done": "Done"
+  },
+  "Tasks": {
+    "title": "Tasks",
+    "add_new": "Add New Task",
+    "form": {
+      "title": "Title",
+      "title_placeholder": "Task name",
+      "due_date": "Due Date",
+      "description": "Description",
+      "description_placeholder": "Optional details",
+      "reminder": "Mark as Reminder",
+      "submit": "Add Task"
+    },
+    "list_title": "All Tasks",
+    "due_prefix": "Due: {date}",
+    "empty": "No tasks found."
+  },
+  "Habits": {
+    "title": "Habits",
+    "add_new": "Add New Habit",
+    "form": {
+      "name": "Habit Name",
+      "name_placeholder": "e.g., Read for 30 mins",
+      "frequency": "Frequency",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "submit": "Add Habit"
+    },
+    "list_title": "My Habits",
+    "empty": "No habits found."
+  },
+  "Login": {
+    "title": "Life Organizer",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "loading": "Loading..."
+  }
+}
