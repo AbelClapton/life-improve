@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePaths } from '@/lib/cache'
 import { withUser } from '@/lib/auth-wrapper'
+import { getDateInTimeZone } from '@/lib/date'
 
 export const createTask = async (locale: string, formData: FormData) =>
   await withUser(async (user, supabase) => {
@@ -44,58 +45,23 @@ export const createTask = async (locale: string, formData: FormData) =>
 
 export const toggleTask = async (locale: string, taskId: string, completed: boolean) =>
   await withUser(async (user, supabase) => {
-    const { data: existingTask, error: taskLookupError } = await supabase
-      .from('tasks')
-      .select('completed_at')
-      .eq('id', taskId)
-      .eq('user_id', user.id)
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('timezone')
+      .eq('id', user.id)
       .single()
 
-    if (taskLookupError || !existingTask) return { error: taskLookupError?.message || 'Task not found.' }
-    if (Boolean(existingTask.completed_at) === completed) return { success: true }
+    if (profileError) return { error: profileError.message }
 
-    const completedAt = completed ? new Date().toISOString() : null
-    const { error } = await supabase
-      .from('tasks')
-      .update({
-        completed_at: completedAt,
-        status: completed ? 'completed' : 'pending',
-      })
-      .eq('id', taskId)
-      .eq('user_id', user.id)
+    const completedAt = new Date()
+    const { error } = await supabase.rpc('complete_task', {
+      target_task_id: taskId,
+      should_complete: completed,
+      completion_timestamp: completedAt.toISOString(),
+      completion_date: getDateInTimeZone(completedAt, profile.timezone || 'Europe/Madrid'),
+    })
 
     if (error) return { error: error.message }
-    if (completed && completedAt) {
-      const completedOn = completedAt.slice(0, 10)
-      const { data: existingEvent } = await supabase
-        .from('task_completion_events')
-        .select('id')
-        .eq('task_id', taskId)
-        .eq('completed_on', completedOn)
-        .maybeSingle()
-
-      if (!existingEvent) {
-        const { error: eventError } = await supabase.from('task_completion_events').insert({
-          task_id: taskId,
-          user_id: user.id,
-          completed_on: completedOn,
-        })
-        if (eventError) return { error: eventError.message }
-
-        const { data: points } = await supabase
-          .from('user_points')
-          .select('points')
-          .eq('user_id', user.id)
-          .maybeSingle()
-        const { error: pointsError } = await supabase.from('user_points').upsert({
-          user_id: user.id,
-          points: (points?.points || 0) + 10,
-          last_active_date: completedOn,
-          updated_at: new Date().toISOString(),
-        })
-        if (pointsError) return { error: pointsError.message }
-      }
-    }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
     return { success: true }
   })

@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { createClientServer } from '@/lib/supabase-server';
+import { getDateInTimeZone } from '@/lib/date';
 
 export default async function ProgressPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -8,13 +9,14 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const since = new Date(today);
-  since.setDate(since.getDate() - 6);
+  const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single();
+  const today = getDateInTimeZone(new Date(), profile?.timezone || 'Europe/Madrid');
+  const todayDate = new Date(`${today}T12:00:00Z`);
+  const since = new Date(todayDate);
+  since.setUTCDate(since.getUTCDate() - 6);
   const dates = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(since);
-    date.setDate(since.getDate() + index);
+    date.setUTCDate(since.getUTCDate() + index);
     return date.toISOString().slice(0, 10);
   });
   const { data: completionEvents } = await supabase
@@ -29,11 +31,11 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
   const { data: allCompletionEvents } = await supabase.from('task_completion_events').select('completed_on').eq('user_id', user.id);
   const allDates = new Set(allCompletionEvents?.map(event => event.completed_on));
   let streak = 0;
-  const streakCursor = new Date(today);
-  if (!allDates.has(streakCursor.toISOString().slice(0, 10))) streakCursor.setDate(streakCursor.getDate() - 1);
+  const streakCursor = new Date(`${today}T12:00:00Z`);
+  if (!allDates.has(today)) streakCursor.setUTCDate(streakCursor.getUTCDate() - 1);
   while (allDates.has(streakCursor.toISOString().slice(0, 10))) {
     streak += 1;
-    streakCursor.setDate(streakCursor.getDate() - 1);
+    streakCursor.setUTCDate(streakCursor.getUTCDate() - 1);
   }
 
   return (

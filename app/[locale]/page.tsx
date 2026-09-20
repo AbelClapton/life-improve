@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
 import { saveDailyReview, toggleTask } from '@/app/actions';
 import { QuickCapture } from '@/app/components/quick-capture';
+import { getDateInTimeZone } from '@/lib/date';
 
 export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -11,7 +12,8 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   if (!user) redirect(`/${locale}/login`);
 
   const t = await getTranslations('Dashboard');
-  const today = new Date().toISOString().split('T')[0];
+  const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single();
+  const today = getDateInTimeZone(new Date(), profile?.timezone || 'Europe/Madrid');
 
   const { data: tasks } = await supabase
     .from('tasks')
