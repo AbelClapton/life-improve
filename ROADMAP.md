@@ -50,7 +50,7 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 - [x] Ampliar `tasks` con notas, área, prioridad, estado, horario, duración, Top 3 y recurrencia.
 - [x] Añadir `daily_reviews`, `user_points`, `achievements` y `user_achievements`.
 - [x] Añadir preferencias de perfil para zona horaria, tema y notificaciones.
-- [ ] Revisar y probar políticas RLS para todas las tablas nuevas.
+- [ ] Probar en Supabase Cloud las políticas RLS para todas las tablas nuevas con usuarios separados.
 - [ ] Completar la migración de `description` a `notes` sin romper datos existentes.
 - [ ] Añadir magic link; habilitar Google solo si la configuración OAuth está disponible.
 
