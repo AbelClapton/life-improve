@@ -47,6 +47,7 @@ export const createTask = async (locale: string, formData: FormData) =>
     const dueAt = due_at ? localDateTimeToUtc(due_at, timeZone) : null
     const startAt = start_at ? localDateTimeToUtc(start_at, timeZone) : null
     if ((due_at && !dueAt) || (start_at && !startAt)) return { error: 'invalid_datetime' }
+    const recurrenceDay = recurrence === 'monthly' && due_at ? Number(due_at.slice(8, 10)) : null
 
     const { error } = await supabase
       .from('tasks')
@@ -62,6 +63,7 @@ export const createTask = async (locale: string, formData: FormData) =>
         duration_min: parsedDuration,
         is_top_three: isTopThree,
         recurrence: recurrence || 'none',
+        recurrence_day: recurrenceDay,
         is_reminder,
       })
 
@@ -104,6 +106,7 @@ export const updateTask = async (locale: string, taskId: string, formData: FormD
     const dueAt = due_at ? localDateTimeToUtc(due_at, timeZone) : null
     const startAt = start_at ? localDateTimeToUtc(start_at, timeZone) : null
     if ((due_at && !dueAt) || (start_at && !startAt)) return { error: 'invalid_datetime' }
+    const recurrenceDay = recurrence === 'monthly' && due_at ? Number(due_at.slice(8, 10)) : null
 
     const { data: updatedTask, error } = await supabase
       .from('tasks')
@@ -116,6 +119,7 @@ export const updateTask = async (locale: string, taskId: string, formData: FormD
         start_at: startAt,
         duration_min: parsedDuration,
         recurrence,
+        recurrence_day: recurrenceDay,
         is_reminder,
       })
       .eq('id', taskId)
