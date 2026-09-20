@@ -482,6 +482,13 @@ textarea:focus-visible {
   align-items: center;
   display: flex;
   gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.task-action-error {
+  color: var(--danger);
+  flex-basis: 100%;
+  font-size: 0.75rem;
 }
 
 .icon-text-button {

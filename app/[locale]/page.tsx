@@ -20,12 +20,14 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
     .select('*, areas(name, color, icon)')
     .eq('user_id', user.id)
     .or(`due_at.is.null,due_at.gte.${today}T00:00:00`)
+    .order('is_top_three', { ascending: false })
+    .order('top_three_position', { ascending: true, nullsFirst: false })
     .order('due_at', { ascending: true });
 
   const todaysTasks = tasks ?? [];
   const completedCount = todaysTasks.filter(task => task.status === 'completed' || task.completed_at).length;
   const progress = todaysTasks.length === 0 ? 0 : Math.round((completedCount / todaysTasks.length) * 100);
-  const topThree = todaysTasks.filter(task => task.is_top_three).slice(0, 3);
+  const topThree = todaysTasks.filter(task => task.is_top_three && task.status !== 'completed').slice(0, 3);
   const pendingTasks = todaysTasks.filter(task => !task.due_at && task.status !== 'completed');
   const { data: dailyReview } = await supabase
     .from('daily_reviews')

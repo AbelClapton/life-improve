@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { createClientServer } from '@/lib/supabase-server';
-import { createTask, toggleTask, deleteTask, setTaskTopThree } from '../../actions';
+import { createTask, toggleTask, deleteTask } from '../../actions';
+import { TopThreeControls } from '@/app/components/top-three-controls';
 
 type SearchParam = string | string[] | undefined;
 
@@ -29,7 +30,10 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
   else if (filters.area) taskQuery = taskQuery.eq('area_id', filters.area);
   if (filters.priority) taskQuery = taskQuery.eq('priority', filters.priority);
   if (filters.status) taskQuery = taskQuery.eq('status', filters.status);
-  const { data: tasks } = await taskQuery.order('due_at', { ascending: true });
+  const { data: tasks } = await taskQuery
+    .order('is_top_three', { ascending: false })
+    .order('top_three_position', { ascending: true, nullsFirst: false })
+    .order('due_at', { ascending: true });
   const { data: areas } = await supabase
     .from('areas')
     .select('id, name, color')
@@ -148,10 +152,18 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
                     </p>
                   </div>
                 </div>
+                <TopThreeControls
+                  locale={locale}
+                  taskId={task.id}
+                  selected={task.is_top_three && task.status !== 'completed'}
+                  position={task.top_three_position}
+                  addLabel={t('add_top_three')}
+                  removeLabel={t('remove_top_three')}
+                  moveUpLabel={t('move_up')}
+                  moveDownLabel={t('move_down')}
+                  limitError={t('top_three_limit')}
+                />
                 <div className="task-actions">
-                  <form action={async () => { await setTaskTopThree(locale, task.id, !task.is_top_three) }}>
-                    <button className={task.is_top_three ? 'secondary-button' : 'icon-text-button'}>{task.is_top_three ? t('remove_top_three') : t('add_top_three')}</button>
-                  </form>
                   <form action={async () => { await deleteTask(locale, task.id) }}>
                     <button className="danger-action">{t('Common.actions.delete')}</button>
                   </form>

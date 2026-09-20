@@ -68,6 +68,9 @@
     "list_title": "All Tasks",
     "add_top_three": "Add to Top 3",
     "remove_top_three": "Remove from Top 3",
+    "move_up": "Move priority up",
+    "move_down": "Move priority down",
+    "top_three_limit": "You can only choose three top priorities.",
     "filters": {
       "area": "Area",
       "priority": "Priority",

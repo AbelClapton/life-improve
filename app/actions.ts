@@ -38,9 +38,7 @@ export const createTask = async (locale: string, formData: FormData) =>
         is_reminder,
       })
 
-    if (error) {
-        return { error: error.message === 'TOP_THREE_LIMIT' ? topThreeLimitMessage : error.message }
-    }
+    if (error) return { error: error.message === 'TOP_THREE_LIMIT' ? topThreeLimitMessage : error.message }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
     return { success: true }
   })
@@ -76,30 +74,29 @@ export const deleteTask = async (locale: string, taskId: string) =>
       .eq('id', taskId)
       .eq('user_id', user.id)
 
-    if (error) return { error: error.message === 'TOP_THREE_LIMIT' ? topThreeLimitMessage : error.message }
+    if (error) return { error: error.message }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
     return { success: true }
   })
 
 export const setTaskTopThree = async (locale: string, taskId: string, selected: boolean) =>
   await withUser(async (user, supabase) => {
-    if (selected) {
-      const { count, error: countError } = await supabase
-        .from('tasks')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_top_three', true)
-        .neq('status', 'completed')
+    const { error } = await supabase.rpc('set_task_top_three', {
+      target_task_id: taskId,
+      should_select: selected,
+    })
 
-      if (countError) return { error: countError.message }
-      if ((count || 0) >= 3) return { error: 'You can only choose three top priorities.' }
-    }
+    if (error) return { error: error.message === 'TOP_THREE_LIMIT' ? topThreeLimitMessage : error.message }
+    revalidatePaths([`/${locale}`, `/${locale}/tasks`])
+    return { success: true }
+  })
 
-    const { error } = await supabase
-      .from('tasks')
-      .update({ is_top_three: selected })
-      .eq('id', taskId)
-      .eq('user_id', user.id)
+export const moveTaskTopThree = async (locale: string, taskId: string, direction: 'up' | 'down') =>
+  await withUser(async (_user, supabase) => {
+    const { error } = await supabase.rpc('move_task_top_three', {
+      target_task_id: taskId,
+      move_direction: direction,
+    })
 
     if (error) return { error: error.message }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
