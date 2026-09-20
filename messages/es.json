@@ -24,6 +24,7 @@
     "pending": "Pendientes",
     "pending_empty": "No hay tareas sin fecha.",
     "no_area": "Sin área",
+    "quick_capture": "Nueva tarea",
     "mark_done": "Marcar como hecha",
     "mark_pending": "Marcar como pendiente"
   },

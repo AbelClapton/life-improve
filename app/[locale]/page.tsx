@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
 import { toggleTask } from '@/app/actions';
+import { QuickCapture } from '@/app/components/quick-capture';
 
 export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -113,6 +114,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
           )}
         </section>
       </div>
+      <QuickCapture locale={locale} label={t('quick_capture')} />
     </div>
   );
 }

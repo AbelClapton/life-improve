@@ -24,6 +24,7 @@
     "pending": "Pending",
     "pending_empty": "Nothing waiting without a date.",
     "no_area": "No area",
+    "quick_capture": "New task",
     "mark_done": "Mark Done",
     "mark_pending": "Mark as pending"
   },
