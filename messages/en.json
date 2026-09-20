@@ -9,7 +9,9 @@
     },
     "navigation_label": "Primary navigation",
     "actions": {
-      "delete": "Delete"
+      "delete": "Delete",
+      "mark_done": "Mark Done",
+      "mark_pending": "Mark as pending"
     }
   },
   "Dashboard": {
@@ -119,7 +121,11 @@
     "title": "Calendar",
     "subtitle": "See the tasks that have a place in your week.",
     "week": "Next seven days",
+    "week_view": "Week",
+    "month_view": "Month",
     "today": "Today",
+    "previous": "Previous period",
+    "next": "Next period",
     "completed": "Completed",
     "pending": "Pending",
     "empty_day": "No tasks",

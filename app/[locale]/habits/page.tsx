@@ -6,6 +6,7 @@ import { getDateInTimeZone } from '@/lib/date';
 export default async function HabitsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations('Habits');
+  const common = await getTranslations('Common');
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -63,12 +64,13 @@ export default async function HabitsPage({ params }: { params: Promise<{ locale:
                   <form action={async () => {
                     await toggleHabitLog(locale, habit.id, today)
                   }}>
-                    <input
-                      type="checkbox"
-                      checked={habit.completedToday}
-                      onChange={() => {}}
-                      className="w-4 h-4"
-                    />
+                    <button
+                      type="submit"
+                      className={`task-check ${habit.completedToday ? 'task-check-done' : ''}`}
+                      aria-label={habit.completedToday ? common('actions.mark_pending') : common('actions.mark_done')}
+                    >
+                      {habit.completedToday ? '✓' : ''}
+                    </button>
                   </form>
                   <div className="flex flex-col">
                     <span className={habit.completedToday ? 'line-through muted-copy' : 'font-medium'}>
@@ -81,7 +83,7 @@ export default async function HabitsPage({ params }: { params: Promise<{ locale:
                   await deleteHabit(locale, habit.id)
                 }}>
                   <button className="danger-action">
-                    {t('Common.actions.delete')}
+                    {common('actions.delete')}
                   </button>
                 </form>
               </div>

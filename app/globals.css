@@ -486,6 +486,35 @@ textarea:focus-visible {
   padding-bottom: 0.35rem;
 }
 
+.calendar-month-grid {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(7, minmax(8rem, 1fr));
+  overflow-x: auto;
+  padding-bottom: 0.35rem;
+}
+
+.calendar-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.calendar-controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.calendar-view-active {
+  background: var(--accent);
+  color: white;
+}
+
 .calendar-day {
   background: var(--surface-muted);
   border: 1px solid var(--line);
@@ -498,6 +527,10 @@ textarea:focus-visible {
 .calendar-day-today {
   border-color: var(--accent);
   box-shadow: inset 0 3px 0 var(--accent);
+}
+
+.calendar-day-outside {
+  opacity: 0.55;
 }
 
 .calendar-day-heading {
@@ -537,6 +570,19 @@ textarea:focus-visible {
   .calendar-week-grid {
     grid-template-columns: 1fr;
     overflow-x: visible;
+  }
+
+  .calendar-month-grid {
+    grid-template-columns: repeat(7, minmax(8rem, 1fr));
+  }
+
+  .calendar-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .calendar-controls {
+    justify-content: flex-start;
   }
 
   .calendar-day {

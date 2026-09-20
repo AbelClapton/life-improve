@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePaths } from '@/lib/cache'
 import { withUser } from '@/lib/auth-wrapper'
-import { getDateInTimeZone } from '@/lib/date'
+import { getDateInTimeZone, isValidTimeZone, localDateTimeToUtc } from '@/lib/date'
 
 const topThreeLimitMessage = 'You can only choose three top priorities.'
 
@@ -20,6 +20,11 @@ export const createTask = async (locale: string, formData: FormData) =>
     const isTopThree = formData.get('is_top_three') === 'on'
     const recurrence = formData.get('recurrence') as string
     const is_reminder = formData.get('is_reminder') === 'on'
+    const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single()
+    const timeZone = profile?.timezone || 'Europe/Madrid'
+    const dueAt = due_at ? localDateTimeToUtc(due_at, timeZone) : null
+    const startAt = start_at ? localDateTimeToUtc(start_at, timeZone) : null
+    if ((due_at && !dueAt) || (start_at && !startAt)) return { error: 'The selected date or time is invalid.' }
 
     const { error } = await supabase
       .from('tasks')
@@ -30,8 +35,8 @@ export const createTask = async (locale: string, formData: FormData) =>
         notes: notes || description || null,
         area_id: areaId || null,
         priority: priority || 'medium',
-        due_at: due_at || null,
-        start_at: start_at || null,
+        due_at: dueAt,
+        start_at: startAt,
         duration_min: durationMin ? Number(durationMin) : null,
         is_top_three: isTopThree,
         recurrence: recurrence || 'none',
@@ -39,7 +44,7 @@ export const createTask = async (locale: string, formData: FormData) =>
       })
 
     if (error) return { error: error.message === 'TOP_THREE_LIMIT' ? topThreeLimitMessage : error.message }
-    revalidatePaths([`/${locale}`, `/${locale}/tasks`])
+    revalidatePaths([`/${locale}`, `/${locale}/tasks`, `/${locale}/calendar`, `/${locale}/progress`])
     return { success: true }
   })
 
@@ -62,7 +67,7 @@ export const toggleTask = async (locale: string, taskId: string, completed: bool
     })
 
     if (error) return { error: error.message }
-    revalidatePaths([`/${locale}`, `/${locale}/tasks`])
+    revalidatePaths([`/${locale}`, `/${locale}/tasks`, `/${locale}/calendar`])
     return { success: true }
   })
 
@@ -75,7 +80,7 @@ export const deleteTask = async (locale: string, taskId: string) =>
       .eq('user_id', user.id)
 
     if (error) return { error: error.message }
-    revalidatePaths([`/${locale}`, `/${locale}/tasks`])
+    revalidatePaths([`/${locale}`, `/${locale}/tasks`, `/${locale}/calendar`])
     return { success: true }
   })
 
@@ -128,6 +133,7 @@ export const updateProfile = async (locale: string, formData: FormData) =>
     const timezone = String(formData.get('timezone') || 'Europe/Madrid')
     const theme = String(formData.get('theme') || 'system')
     const notificationsEnabled = formData.get('notifications_enabled') === 'on'
+    if (!isValidTimeZone(timezone)) return { error: 'Invalid time zone.' }
 
     const { error } = await supabase
       .from('profiles')
@@ -141,7 +147,7 @@ export const updateProfile = async (locale: string, formData: FormData) =>
       .eq('id', user.id)
 
     if (error) return { error: error.message }
-    revalidatePaths([`/${locale}/settings`])
+    revalidatePaths([`/${locale}/settings`, `/${locale}`, `/${locale}/calendar`])
     return { success: true }
   })
 

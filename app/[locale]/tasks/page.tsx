@@ -11,6 +11,7 @@ function firstSearchParam(value: SearchParam) {
 
 export default async function TasksPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ area?: SearchParam; priority?: SearchParam; status?: SearchParam }> }) {
   const { locale } = await params;
+  const common = await getTranslations('Common');
   const rawFilters = await searchParams;
   const filters = {
     area: firstSearchParam(rawFilters.area),
@@ -21,6 +22,8 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
+  const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single();
+  const timeZone = profile?.timezone || 'Europe/Madrid';
 
   let taskQuery = supabase
     .from('tasks')
@@ -130,12 +133,13 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
                   <form action={async () => {
                     await toggleTask(locale, task.id, !task.completed_at)
                   }}>
-                    <input
-                      type="checkbox"
-                      checked={!!task.completed_at}
-                      onChange={() => {}}
-                      className="w-4 h-4"
-                    />
+                    <button
+                      type="submit"
+                      className={`task-check ${task.completed_at ? 'task-check-done' : ''}`}
+                      aria-label={task.completed_at ? t('mark_pending') : t('mark_done')}
+                    >
+                      {task.completed_at ? '✓' : ''}
+                    </button>
                   </form>
                   <div className="flex flex-col">
                     <p className={task.completed_at ? 'line-through text-gray-400' : 'font-medium'}>
@@ -143,7 +147,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
                     </p>
                     {task.due_at && (
                       <p className="muted-copy">
-                        {t('due_prefix', { date: new Date(task.due_at).toLocaleString() })}
+                        {t('due_prefix', { date: new Date(task.due_at).toLocaleString(locale, { timeZone }) })}
                       </p>
                     )}
                     <p className="muted-copy task-meta">
@@ -165,7 +169,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
                 />
                 <div className="task-actions">
                   <form action={async () => { await deleteTask(locale, task.id) }}>
-                    <button className="danger-action">{t('Common.actions.delete')}</button>
+                    <button className="danger-action">{common('actions.delete')}</button>
                   </form>
                 </div>
               </div>

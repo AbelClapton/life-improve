@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
 import { saveDailyReview, toggleTask } from '@/app/actions';
 import { QuickCapture } from '@/app/components/quick-capture';
-import { getDateInTimeZone } from '@/lib/date';
+import { getDateInTimeZone, getUtcStartForDate, getUtcStartForNextDate } from '@/lib/date';
 
 export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -13,20 +13,24 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
 
   const t = await getTranslations('Dashboard');
   const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single();
-  const today = getDateInTimeZone(new Date(), profile?.timezone || 'Europe/Madrid');
+  const timeZone = profile?.timezone || 'Europe/Madrid';
+  const today = getDateInTimeZone(new Date(), timeZone);
+  const todayStart = getUtcStartForDate(today, timeZone);
+  const tomorrowStart = getUtcStartForNextDate(today, timeZone);
 
   const { data: tasks } = await supabase
     .from('tasks')
     .select('*, areas(name, color, icon)')
     .eq('user_id', user.id)
-    .or(`due_at.is.null,due_at.gte.${today}T00:00:00`)
+    .or(`due_at.is.null,and(due_at.gte.${todayStart},due_at.lt.${tomorrowStart})`)
     .order('is_top_three', { ascending: false })
     .order('top_three_position', { ascending: true, nullsFirst: false })
     .order('due_at', { ascending: true });
 
   const todaysTasks = tasks ?? [];
-  const completedCount = todaysTasks.filter(task => task.status === 'completed' || task.completed_at).length;
-  const progress = todaysTasks.length === 0 ? 0 : Math.round((completedCount / todaysTasks.length) * 100);
+  const datedTasks = todaysTasks.filter(task => task.due_at);
+  const completedCount = datedTasks.filter(task => task.status === 'completed' || task.completed_at).length;
+  const progress = datedTasks.length === 0 ? 0 : Math.round((completedCount / datedTasks.length) * 100);
   const topThree = todaysTasks.filter(task => task.is_top_three && task.status !== 'completed').slice(0, 3);
   const pendingTasks = todaysTasks.filter(task => !task.due_at && task.status !== 'completed');
   const { data: dailyReview } = await supabase
@@ -39,7 +43,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   return (
     <div>
       <header className="page-heading">
-        <span className="eyebrow">{new Date().toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' })}</span>
+        <span className="eyebrow">{new Date().toLocaleDateString(locale, { timeZone, weekday: 'long', month: 'long', day: 'numeric' })}</span>
         <h1 className="page-title">{t('greeting', { email: user.email || '' })}</h1>
         <p className="page-subtitle">{t('subtitle')}</p>
       </header>
@@ -85,17 +89,18 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
                   <form action={async () => {
                     await toggleTask(locale, task.id, !task.completed_at)
                   }}>
-                    <input
-                      type="checkbox"
-                      checked={!!task.completed_at}
-                      onChange={() => {}}
-                      className="w-4 h-4"
-                    />
+                    <button
+                      type="submit"
+                      className={`task-check ${task.completed_at ? 'task-check-done' : ''}`}
+                      aria-label={task.completed_at ? t('mark_pending') : t('mark_done')}
+                    >
+                      {task.completed_at ? '✓' : ''}
+                    </button>
                   </form>
                   <span className={task.completed_at ? 'line-through muted-copy' : ''}>
                     {task.title}
                   </span>
-                  <span className="muted-copy">{new Date(task.due_at).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })}</span>
+                  <span className="muted-copy">{new Date(task.due_at).toLocaleTimeString(locale, { timeZone, hour: 'numeric', minute: '2-digit' })}</span>
                 </li>
               ))}
             </ul>

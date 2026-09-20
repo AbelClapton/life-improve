@@ -9,7 +9,9 @@
     },
     "navigation_label": "Navegación principal",
     "actions": {
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "mark_done": "Marcar como hecha",
+      "mark_pending": "Marcar como pendiente"
     }
   },
   "Dashboard": {
@@ -119,7 +121,11 @@
     "title": "Calendario",
     "subtitle": "Mira las tareas que ya tienen un lugar en tu semana.",
     "week": "Próximos siete días",
+    "week_view": "Semana",
+    "month_view": "Mes",
     "today": "Hoy",
+    "previous": "Periodo anterior",
+    "next": "Periodo siguiente",
     "completed": "Completada",
     "pending": "Pendiente",
     "empty_day": "Sin tareas",
