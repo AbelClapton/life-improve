@@ -37,11 +37,30 @@
       "due_date": "Due Date",
       "description": "Description",
       "description_placeholder": "Optional details",
+      "area": "Area",
+      "no_area": "No area",
+      "priority": "Priority",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "start_time": "Start time",
+      "duration": "Duration (minutes)",
+      "recurrence": "Recurrence",
+      "none": "None",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "top_three": "Add to today's Top 3",
       "reminder": "Mark as Reminder",
       "submit": "Add Task"
     },
     "list_title": "All Tasks",
     "due_prefix": "Due: {date}",
+    "priority": {
+      "high": "High priority",
+      "medium": "Medium priority",
+      "low": "Low priority"
+    },
     "empty": "No tasks found."
   },
   "Habits": {

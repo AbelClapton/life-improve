@@ -37,11 +37,30 @@
       "due_date": "Fecha límite",
       "description": "Descripción",
       "description_placeholder": "Detalles opcionales",
+      "area": "Área",
+      "no_area": "Sin área",
+      "priority": "Prioridad",
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja",
+      "start_time": "Hora de inicio",
+      "duration": "Duración (minutos)",
+      "recurrence": "Recurrencia",
+      "none": "Ninguna",
+      "daily": "Diaria",
+      "weekly": "Semanal",
+      "monthly": "Mensual",
+      "top_three": "Añadir al Top 3 de hoy",
       "reminder": "Marcar como recordatorio",
       "submit": "Añadir tarea"
     },
     "list_title": "Todas las tareas",
     "due_prefix": "Fecha límite: {date}",
+    "priority": {
+      "high": "Prioridad alta",
+      "medium": "Prioridad media",
+      "low": "Prioridad baja"
+    },
     "empty": "No se encontraron tareas."
   },
   "Habits": {
