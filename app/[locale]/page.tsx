@@ -1,11 +1,13 @@
 import { getTranslations } from 'next-intl/server';
-import { createClientServer } from '@/lib/supabase';
-import { toggleHabitLog, toggleTask } from './actions';
+import { redirect } from 'next/navigation';
+import { createClientServer } from '@/lib/supabase-server';
+import { toggleHabitLog, toggleTask } from '@/app/actions';
 
-export default async function Dashboard({ params: { locale } }: { params: { locale: string } }) {
+export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) redirect(`/${locale}/login`);
 
   const t = await getTranslations('Dashboard');
   const today = new Date().toISOString().split('T')[0];
@@ -26,12 +28,12 @@ export default async function Dashboard({ params: { locale } }: { params: { loca
 
   const habitStatuses = habits?.map(h => ({
     ...h,
-    completedToday: h.habit_logs?.some(log => log.completed_at === today)
+    completedToday: h.habit_logs?.some((log: { completed_at: string | null }) => log.completed_at === today)
   }));
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">{t('greeting', { email: user.email })}</h1>
+      <h1 className="text-3xl font-bold">{t('greeting', { email: user.email || '' })}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Today's Tasks */}
@@ -42,7 +44,7 @@ export default async function Dashboard({ params: { locale } }: { params: { loca
               {tasks.map(task => (
                 <li key={task.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded">
                   <form action={async () => {
-                    await toggleTask(task.id, !task.completed_at)
+                    await toggleTask(locale, task.id, !task.completed_at)
                   }}>
                     <input
                       type="checkbox"
@@ -71,7 +73,7 @@ export default async function Dashboard({ params: { locale } }: { params: { loca
                 <li key={habit.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
                   <span>{habit.name}</span>
                   <form action={async () => {
-                    await toggleHabitLog(habit.id, today)
+                    await toggleHabitLog(locale, habit.id, today)
                   }}>
                     <button
                       className={`px-3 py-1 rounded-full text-xs ${habit.completedToday ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}`}

@@ -1,14 +1,14 @@
-import { createClientServer } from '@/lib/supabase'
+import { createClientServer } from '@/lib/supabase-server'
 import { User } from '@supabase/supabase-js'
 import { SupabaseClient } from '@supabase/supabase-js'
 
-type AuthHandler<Args extends any[], R> = (
+type AuthHandler<Args extends unknown[], R> = (
   user: User,
   supabase: SupabaseClient,
   ...args: Args
 ) => Promise<R>
 
-export async function withUser<Args extends any[], R>(
+export async function withUser<Args extends unknown[], R>(
   handler: AuthHandler<Args, R>,
   ...args: Args
 ): Promise<R> {

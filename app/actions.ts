@@ -2,7 +2,6 @@
 
 import { revalidatePaths } from '@/lib/cache'
 import { withUser } from '@/lib/auth-wrapper'
-import { getTranslations } from 'next-intl/server'
 
 export const createTask = async (locale: string, formData: FormData) =>
   await withUser(async (user, supabase) => {
@@ -22,12 +21,11 @@ export const createTask = async (locale: string, formData: FormData) =>
       })
 
     if (error) {
-      const t = await getTranslations({ locale, namespace: 'Common' });
-      return { error: error.message } // In a real app, we'd use t('errors.db')
+      return { error: error.message }
     }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
     return { success: true }
-  }, formData)
+  })
 
 export const toggleTask = async (locale: string, taskId: string, completed: boolean) =>
   await withUser(async (user, supabase) => {
@@ -40,7 +38,7 @@ export const toggleTask = async (locale: string, taskId: string, completed: bool
     if (error) return { error: error.message }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
     return { success: true }
-  }, taskId, completed)
+  })
 
 export const deleteTask = async (locale: string, taskId: string) =>
   await withUser(async (user, supabase) => {
@@ -53,7 +51,7 @@ export const deleteTask = async (locale: string, taskId: string) =>
     if (error) return { error: error.message }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
     return { success: true }
-  }, taskId)
+  })
 
 export const createHabit = async (locale: string, formData: FormData) =>
   await withUser(async (user, supabase) => {
@@ -71,7 +69,7 @@ export const createHabit = async (locale: string, formData: FormData) =>
     if (error) return { error: error.message }
     revalidatePaths([`/${locale}`, `/${locale}/habits`])
     return { success: true }
-  }, formData)
+  })
 
 export const toggleHabitLog = async (locale: string, habitId: string, date: string) =>
   await withUser(async (user, supabase) => {
@@ -97,7 +95,7 @@ export const toggleHabitLog = async (locale: string, habitId: string, date: stri
 
     revalidatePaths([`/${locale}`, `/${locale}/habits`])
     return { success: true }
-  }, habitId, date)
+  })
 
 export const deleteHabit = async (locale: string, habitId: string) =>
   await withUser(async (user, supabase) => {
@@ -110,4 +108,4 @@ export const deleteHabit = async (locale: string, habitId: string) =>
     if (error) return { error: error.message }
     revalidatePaths([`/${locale}`, `/${locale}/habits`])
     return { success: true }
-  }, habitId)
+  })

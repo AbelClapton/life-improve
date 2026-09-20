@@ -1,8 +1,9 @@
 import { getTranslations } from 'next-intl/server';
-import { createClientServer } from '@/lib/supabase';
-import { createTask } from '../../actions';
+import { createClientServer } from '@/lib/supabase-server';
+import { createTask, toggleTask, deleteTask } from '../../actions';
 
-export default async function TasksPage({ params: { locale } }: { params: { locale: string } }) {
+export default async function TasksPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const t = await getTranslations('Tasks');
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
@@ -27,7 +28,7 @@ export default async function TasksPage({ params: { locale } }: { params: { loca
           <div className="space-y-2">
             <label className="block text-sm font-medium">{t('form.title')}</label>
             <input name="title" required className="w-full p-2 border rounded" placeholder={t('form.title_placeholder')} />
-          </div}
+          </div>
           <div className="space-y-2">
             <label className="block text-sm font-medium">{t('form.due_date')}</label>
             <input name="due_at" type="datetime-local" className="w-full p-2 border rounded" />
@@ -35,11 +36,11 @@ export default async function TasksPage({ params: { locale } }: { params: { loca
           <div className="md:col-span-2 space-y-2">
             <label className="block text-sm font-medium">{t('form.description')}</label>
             <textarea name="description" className="w-full p-2 border rounded" placeholder={t('form.description_placeholder')} />
-          </div}
+          </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" name="is_reminder" id="is_reminder" />
             <label htmlFor="is_reminder" className="text-sm">{t('form.reminder')}</label>
-          </div}
+          </div>
           <button type="submit" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
             {t('form.submit')}
           </button>
@@ -87,7 +88,7 @@ export default async function TasksPage({ params: { locale } }: { params: { loca
           ) : (
             <p className="text-gray-500">{t('empty')}</p>
           )}
-        </div}
+        </div>
       </section>
     </div>
   )

@@ -1,0 +1,58 @@
+{
+  "Common": {
+    "navigation": {
+      "tasks": "Tareas",
+      "habits": "Hábitos"
+    },
+    "actions": {
+      "delete": "Eliminar"
+    }
+  },
+  "Dashboard": {
+    "greeting": "Hola, {email}",
+    "tasks_title": "Tareas de hoy",
+    "tasks_empty": "No hay tareas para hoy.",
+    "habits_title": "Hábitos diarios",
+    "habits_empty": "Aún no hay hábitos definidos.",
+    "mark_done": "Marcar como hecha",
+    "done": "Hecha"
+  },
+  "Tasks": {
+    "title": "Tareas",
+    "add_new": "Añadir tarea",
+    "form": {
+      "title": "Título",
+      "title_placeholder": "Nombre de la tarea",
+      "due_date": "Fecha límite",
+      "description": "Descripción",
+      "description_placeholder": "Detalles opcionales",
+      "reminder": "Marcar como recordatorio",
+      "submit": "Añadir tarea"
+    },
+    "list_title": "Todas las tareas",
+    "due_prefix": "Fecha límite: {date}",
+    "empty": "No se encontraron tareas."
+  },
+  "Habits": {
+    "title": "Hábitos",
+    "add_new": "Añadir hábito",
+    "form": {
+      "name": "Nombre del hábito",
+      "name_placeholder": "p. ej., Leer durante 30 minutos",
+      "frequency": "Frecuencia",
+      "daily": "Diario",
+      "weekly": "Semanal",
+      "submit": "Añadir hábito"
+    },
+    "list_title": "Mis hábitos",
+    "empty": "No se encontraron hábitos."
+  },
+  "Login": {
+    "title": "Organizador de vida",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "loading": "Cargando..."
+  }
+}
