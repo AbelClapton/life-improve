@@ -1,52 +1,30 @@
-graph TD
-    %% Current State
-    subgraph Current ["🚀 Current State"]
-        CS1[Next.js App Router]
-        CS2[Supabase SSR]
-        CS3[Task/Habit CRUD]
-        CS4[i18n Framework]
-        CS5[Developer Standards]
-    end
+flowchart TD
+    F0["Fase 0: Foundation\nShell mobile-first · i18n · fechas"]
+    F1["Fase 1: Auth y dominio\nÁreas · tareas · reviews · puntos"]
+    F2["Fase 2: Hoy\nProgreso · Top 3 · timeline · pendientes"]
+    F3["Fase 3: Interacciones\nCaptura · posponer · rachas · cierre"]
+    F4["Fase 4: Calendario\nSemanal móvil · mensual escritorio"]
+    F5["Fase 5: Progreso\nGráficas · logros · áreas"]
+    F6["Fase 6: Ajustes\nPerfil · áreas · tema · preferencias"]
+    F7["Fase 7: PWA\nManifest · offline shell · push"]
+    LATER["Después del MVP\nHábitos · finanzas · integraciones · IA"]
 
-    %% Short Term
-    subgraph ShortTerm ["🛠️ Immediate Next Steps"]
-        ST1[UI/UX Polish]
-        ST2[Task Categories and Tags]
-        ST3[Task Priority Levels]
-        ST4[Reminders and Notifications]
-        ST5[Habit Streaks]
-        ST6[Habit Completion Rates]
-        ST7[Expanded Language Support]
-    end
+    F0 --> F1 --> F2 --> F3
+    F2 --> F4
+    F3 --> F5
+    F1 --> F6
+    F2 --> F7
+    F4 --> F5
+    F5 --> LATER
+    F6 --> LATER
+    F7 --> LATER
 
-    %% Mid Term
-    subgraph MidTerm ["📈 Growth Phase"]
-        MT1[Calendar View]
-        MT2[Markdown Notes]
-        MT3[User Profiles]
-        MT4[Notifications Engine]
-        MT5[Email Templates]
-    end
+    classDef foundation fill:#e0e7ff,stroke:#4f46e5,color:#1e1b4b
+    classDef product fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef platform fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+    classDef later fill:#f1f5f9,stroke:#64748b,color:#334155
 
-    %% Ideas
-    subgraph Ideas ["💡 Innovations"]
-        I1[AI Life Coach]
-        I2[Gamification]
-        I3[Smart Scheduling]
-        I4[PWA Sync]
-        I5[Life Audit Reports]
-        I6[Voice Interface]
-        I7[External Integrations]
-        I8[Nested and Dependent Tasks]
-        I9[Shareable Routines and Templates]
-    end
-
-    %% Flow
-    Current --> ShortTerm
-    ShortTerm --> MidTerm
-    MidTerm --> Ideas
-
-    style Current fill:#f9f,stroke:#333,stroke-width:2px
-    style ShortTerm fill:#bbf,stroke:#333,stroke-width:2px
-    style MidTerm fill:#bfb,stroke:#333,stroke-width:2px
-    style Ideas fill:#fff4dd,stroke:#d4a017,stroke-width:2px
+    class F0,F1 foundation
+    class F2,F3,F4,F5,F6 product
+    class F7 platform
+    class LATER later

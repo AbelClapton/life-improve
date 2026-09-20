@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
-import { toggleHabitLog, toggleTask } from '@/app/actions';
+import { toggleTask } from '@/app/actions';
 
 export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -12,37 +12,65 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   const t = await getTranslations('Dashboard');
   const today = new Date().toISOString().split('T')[0];
 
-  // Fetch today's pending tasks
   const { data: tasks } = await supabase
     .from('tasks')
-    .select('*')
+    .select('*, areas(name, color, icon)')
     .eq('user_id', user.id)
-    .or(`completed_at.is.null,due_at=gte.${new Date().toISOString()}`)
+    .or(`due_at.is.null,due_at.gte.${today}T00:00:00`)
     .order('due_at', { ascending: true });
 
-  // Fetch habits and their status for today
-  const { data: habits } = await supabase
-    .from('habits')
-    .select('*, habit_logs(completed_at)')
-    .eq('user_id', user.id);
-
-  const habitStatuses = habits?.map(h => ({
-    ...h,
-    completedToday: h.habit_logs?.some((log: { completed_at: string | null }) => log.completed_at === today)
-  }));
+  const todaysTasks = tasks ?? [];
+  const completedCount = todaysTasks.filter(task => task.status === 'completed' || task.completed_at).length;
+  const progress = todaysTasks.length === 0 ? 0 : Math.round((completedCount / todaysTasks.length) * 100);
+  const topThree = todaysTasks.filter(task => task.is_top_three).slice(0, 3);
+  const pendingTasks = todaysTasks.filter(task => !task.due_at && task.status !== 'completed');
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-3xl font-bold">{t('greeting', { email: user.email || '' })}</h1>
+    <div>
+      <header className="page-heading">
+        <span className="eyebrow">{new Date().toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' })}</span>
+        <h1 className="page-title">{t('greeting', { email: user.email || '' })}</h1>
+        <p className="page-subtitle">{t('subtitle')}</p>
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Today's Tasks */}
-        <section className="bg-white p-6 rounded-xl shadow-sm border">
-          <h2 className="text-xl font-semibold mb-4">{t('tasks_title')}</h2>
-          {tasks && tasks.length > 0 ? (
+      <div className="today-overview">
+        <section className="panel progress-panel">
+          <div className="progress-ring" style={{ background: `conic-gradient(var(--accent) ${progress}%, var(--surface-muted) 0)` }}>
+            <div className="progress-ring-value"><strong>{progress}%</strong><span>{t('progress')}</span></div>
+          </div>
+          <div>
+            <span className="eyebrow">{t('focus_label')}</span>
+            <h2 className="panel-title">{t('progress_summary', { completed: completedCount, total: todaysTasks.length })}</h2>
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-heading"><h2 className="panel-title">{t('top_three')}</h2><span className="eyebrow">{topThree.length}/3</span></div>
+          {topThree.length > 0 ? (
             <ul className="space-y-3">
-              {tasks.map(task => (
-                <li key={task.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded">
+              {topThree.map(task => (
+                <li key={task.id} className="task-row">
+                  <form action={async () => { await toggleTask(locale, task.id, !task.completed_at) }}>
+                    <button className={`task-check ${task.completed_at ? 'task-check-done' : ''}`} aria-label={task.completed_at ? t('mark_pending') : t('mark_done')}>
+                      {task.completed_at ? '✓' : ''}
+                    </button>
+                  </form>
+                  <span className={task.completed_at ? 'line-through muted-copy' : ''}>{task.title}</span>
+                  <span className="area-dot" style={{ background: task.areas?.color || 'var(--accent)' }} title={task.areas?.name || t('no_area')} />
+                </li>
+              ))}
+            </ul>
+          ) : <p className="muted-copy">{t('top_three_empty')}</p>}
+        </section>
+      </div>
+
+      <div className="workspace-grid">
+        <section className="panel">
+          <div className="panel-heading"><h2 className="panel-title">{t('timeline')}</h2><span className="eyebrow">{todaysTasks.length}</span></div>
+          {todaysTasks.length > 0 ? (
+            <ul className="space-y-3">
+              {todaysTasks.filter(task => task.due_at).map(task => (
+                <li key={task.id} className="list-row">
                   <form action={async () => {
                     await toggleTask(locale, task.id, !task.completed_at)
                   }}>
@@ -53,39 +81,35 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
                       className="w-4 h-4"
                     />
                   </form>
-                  <span className={task.completed_at ? 'line-through text-gray-400' : ''}>
+                  <span className={task.completed_at ? 'line-through muted-copy' : ''}>
                     {task.title}
                   </span>
+                  <span className="muted-copy">{new Date(task.due_at).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500">{t('tasks_empty')}</p>
+            <p className="muted-copy">{t('timeline_empty')}</p>
           )}
         </section>
 
-        {/* Daily Habits */}
-        <section className="bg-white p-6 rounded-xl shadow-sm border">
-          <h2 className="text-xl font-semibold mb-4">{t('habits_title')}</h2>
-          {habitStatuses && habitStatuses.length > 0 ? (
+        <section className="panel">
+          <div className="panel-heading"><h2 className="panel-title">{t('pending')}</h2><span className="eyebrow">{pendingTasks.length}</span></div>
+          {pendingTasks.length > 0 ? (
             <ul className="space-y-3">
-              {habitStatuses.map(habit => (
-                <li key={habit.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
-                  <span>{habit.name}</span>
+              {pendingTasks.map(task => (
+                <li key={task.id} className="list-row">
+                  <span>{task.title}</span>
                   <form action={async () => {
-                    await toggleHabitLog(locale, habit.id, today)
+                    await toggleTask(locale, task.id, true)
                   }}>
-                    <button
-                      className={`px-3 py-1 rounded-full text-xs ${habit.completedToday ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}`}
-                    >
-                      {habit.completedToday ? t('done') : t('mark_done')}
-                    </button>
+                    <button className="secondary-button">{t('mark_done')}</button>
                   </form>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500">{t('habits_empty')}</p>
+            <p className="muted-copy">{t('pending_empty')}</p>
           )}
         </section>
       </div>

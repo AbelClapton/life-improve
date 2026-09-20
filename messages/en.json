@@ -1,8 +1,11 @@
 {
   "Common": {
     "navigation": {
-      "tasks": "Tasks",
-      "habits": "Habits"
+      "today": "Today",
+      "calendar": "Calendar",
+      "progress": "Progress",
+      "settings": "Settings",
+      "new_task": "New task"
     },
     "actions": {
       "delete": "Delete"
@@ -10,12 +13,19 @@
   },
   "Dashboard": {
     "greeting": "Hello, {email}",
-    "tasks_title": "Today's Tasks",
-    "tasks_empty": "No tasks for today!",
-    "habits_title": "Daily Habits",
-    "habits_empty": "No habits defined yet.",
+    "subtitle": "Choose what matters today, then make room for the rest.",
+    "progress": "complete",
+    "focus_label": "Today's focus",
+    "progress_summary": "{completed} of {total} tasks complete",
+    "top_three": "Top 3 today",
+    "top_three_empty": "Choose up to three priorities from your tasks.",
+    "timeline": "Timeline",
+    "timeline_empty": "No timed tasks today.",
+    "pending": "Pending",
+    "pending_empty": "Nothing waiting without a date.",
+    "no_area": "No area",
     "mark_done": "Mark Done",
-    "done": "Done"
+    "mark_pending": "Mark as pending"
   },
   "Tasks": {
     "title": "Tasks",
@@ -46,6 +56,38 @@
     },
     "list_title": "My Habits",
     "empty": "No habits found."
+  },
+  "Calendar": {
+    "eyebrow": "Plan the week",
+    "title": "Calendar",
+    "subtitle": "See the tasks that have a place in your week.",
+    "week": "Next seven days",
+    "completed": "Completed",
+    "pending": "Pending",
+    "empty": "No scheduled tasks this week.",
+    "add_task": "Add a task"
+  },
+  "Progress": {
+    "eyebrow": "Keep the signal visible",
+    "title": "Progress",
+    "subtitle": "A simple view of the work you have completed recently.",
+    "week_label": "This week",
+    "completed_tasks": "tasks completed",
+    "streak_label": "Current streak",
+    "streak_placeholder": "Streak tracking arrives with points.",
+    "coming_title": "More progress signals",
+    "coming_copy": "Weekly bars, area summaries, points, and achievements are next."
+  },
+  "Settings": {
+    "eyebrow": "Make it yours",
+    "title": "Settings",
+    "subtitle": "Your private preferences for Mi Día.",
+    "email": "Email",
+    "display_name": "Name",
+    "timezone": "Time zone",
+    "theme": "Theme",
+    "not_set": "Not set",
+    "next_step": "Editing preferences and managing areas are next."
   },
   "Login": {
     "title": "Life Organizer",

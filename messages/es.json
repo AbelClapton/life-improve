@@ -1,8 +1,11 @@
 {
   "Common": {
     "navigation": {
-      "tasks": "Tareas",
-      "habits": "Hábitos"
+      "today": "Hoy",
+      "calendar": "Calendario",
+      "progress": "Progreso",
+      "settings": "Ajustes",
+      "new_task": "Nueva tarea"
     },
     "actions": {
       "delete": "Eliminar"
@@ -10,12 +13,19 @@
   },
   "Dashboard": {
     "greeting": "Hola, {email}",
-    "tasks_title": "Tareas de hoy",
-    "tasks_empty": "No hay tareas para hoy.",
-    "habits_title": "Hábitos diarios",
-    "habits_empty": "Aún no hay hábitos definidos.",
+    "subtitle": "Elige lo importante de hoy y deja espacio para lo demás.",
+    "progress": "completo",
+    "focus_label": "Enfoque de hoy",
+    "progress_summary": "{completed} de {total} tareas completadas",
+    "top_three": "Top 3 de hoy",
+    "top_three_empty": "Elige hasta tres prioridades entre tus tareas.",
+    "timeline": "Cronograma",
+    "timeline_empty": "No hay tareas con hora para hoy.",
+    "pending": "Pendientes",
+    "pending_empty": "No hay tareas sin fecha.",
+    "no_area": "Sin área",
     "mark_done": "Marcar como hecha",
-    "done": "Hecha"
+    "mark_pending": "Marcar como pendiente"
   },
   "Tasks": {
     "title": "Tareas",
@@ -46,6 +56,38 @@
     },
     "list_title": "Mis hábitos",
     "empty": "No se encontraron hábitos."
+  },
+  "Calendar": {
+    "eyebrow": "Planifica la semana",
+    "title": "Calendario",
+    "subtitle": "Mira las tareas que ya tienen un lugar en tu semana.",
+    "week": "Próximos siete días",
+    "completed": "Completada",
+    "pending": "Pendiente",
+    "empty": "No hay tareas programadas esta semana.",
+    "add_task": "Añadir tarea"
+  },
+  "Progress": {
+    "eyebrow": "Mantén visible la señal",
+    "title": "Progreso",
+    "subtitle": "Una vista sencilla del trabajo que has completado recientemente.",
+    "week_label": "Esta semana",
+    "completed_tasks": "tareas completadas",
+    "streak_label": "Racha actual",
+    "streak_placeholder": "El seguimiento de rachas llega con los puntos.",
+    "coming_title": "Más señales de progreso",
+    "coming_copy": "Las barras semanales, áreas, puntos y logros son el siguiente paso."
+  },
+  "Settings": {
+    "eyebrow": "Hazlo tuyo",
+    "title": "Ajustes",
+    "subtitle": "Tus preferencias privadas de Mi Día.",
+    "email": "Correo electrónico",
+    "display_name": "Nombre",
+    "timezone": "Zona horaria",
+    "theme": "Tema",
+    "not_set": "Sin definir",
+    "next_step": "La edición de preferencias y la gestión de áreas son el siguiente paso."
   },
   "Login": {
     "title": "Organizador de vida",

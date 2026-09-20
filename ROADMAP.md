@@ -1,40 +1,132 @@
-# Project Roadmap: Life Organizer
+# Roadmap: Mi Día
 
-The Life Organizer is a comprehensive personal management system designed to unify tasks, habits, and life organization into a single, high-performance application.
+Mi Día es una PWA mobile-first para organización personal diaria. Está pensada para una sola persona, con contenido privado, autenticación y una experiencia breve que ayude a elegir y completar las prioridades del día.
 
-## 🚀 Current State
-- [x] Next.js App Router with Supabase SSR integration.
-- [x] Authentication flow with session management.
-- [x] Task management (Create, Read, Update, Delete).
-- [x] Habit tracking with completion logging.
-- [x] Internationalization (i18n) framework implemented.
-- [x] Developer Standards established for maintainable growth.
+## Dirección del producto
 
-## 🛠️ Immediate Next Steps (Short-Term)
-- [ ] **UI/UX Polish**: Improve the current layout with a consistent design system (e.g., Tailwind components).
-- [ ] **Advanced Task Features**:
-  - [ ] Task categories/tags.
-  - [ ] Priority levels.
-  - [ ] Reminders/Notifications integration.
-- [ ] **Habit Analytics**:
-  - [ ] Visual streaks (e.g., GitHub-style contribution graph).
-  - [ ] Completion rate percentages.
-- [ ] **Language Support**: Expand translation dictionaries beyond English.
+- Español como idioma principal; se conserva i18n para inglés.
+- Experiencia mobile-first, con navegación inferior en móvil y sidebar en escritorio.
+- Tema claro, oscuro y automático.
+- Núcleo inicial: tareas, áreas, Top 3, timeline, progreso y cierre del día.
+- Hábitos, finanzas, Google Calendar, multiusuario e IA de planificación quedan fuera del MVP.
+- “Life Organizer” es el nombre técnico heredado; la experiencia visible debe converger hacia “Mi Día”.
 
-## 📈 Growth Phase (Mid-Term)
-- [ ] **Calendar View**: Integrated calendar to visualize tasks and habit streaks.
-- [ ] **Notes/Knowledge Base**: A simple markdown-based note-taking system linked to tasks.
-- [ ] **User Profiles**: Customizable profiles and settings.
-- [ ] **Notifications Engine**: Server-side cron jobs to send reminders.
-- [ ] **Email Templates**: Improve the design, localization, reusable components, and delivery states of system emails.
+## Estado actual
 
-## 💡 Potential Ideas & Innovations
-- [ ] **Voice Interface**: Implement voice-to-text (input) and text-to-speech (output) for a hands-free experience (e.g., using Web Speech API).
-- [ ] **AI Life Coach**: Integration with LLMs to suggest habit optimizations or prioritize tasks based on user behavior.
-- [ ] **Gamification**: XP and levels based on habit completion and task closure to increase motivation.
-- [ ] **Smart Scheduling**: AI-powered scheduling that suggests the best time for a task based on historical productivity.
-- [ ] **Cross-Platform Sync**: PWA (Progressive Web App) support for mobile-first access.
-- [ ] **Life Audit**: Monthly reports analyzing task/habit completion to identify patterns and areas for improvement.
-- [ ] **Integrations**: Sync with external calendars (Google/Outlook) or task managers.
-- [ ] **Nested/Dependent Tasks**: Allow tasks to depend on other tasks (e.g., "buy metered water bottle" must complete before "track daily water intake" becomes active). Enables prerequisite chains and baseline setup workflows.
-- [ ] **Shareable Routines/Templates**: Export/import task/habit routines as shareable templates (coach → trainee, psychologist → patient daily checklist, etc.). Supports versioning, forking, and access control (view/edit/admin).
+### Implementado
+
+- [x] Next.js App Router con rutas localizadas.
+- [x] Supabase SSR, sesiones y RLS para los modelos existentes.
+- [x] Autenticación por email y contraseña.
+- [x] CRUD básico de tareas y hábitos.
+- [x] Registros de cumplimiento de hábitos.
+- [x] Diccionarios `en` y `es`.
+- [x] Primera versión de “Hoy” con progreso, Top 3, timeline y pendientes.
+- [x] Migración inicial del dominio de Mi Día: áreas, campos avanzados de tareas, reviews, puntos y logros.
+
+### Parcial
+
+- [ ] El dashboard ya es el punto de partida de “Hoy”, pero aún falta captura rápida, selección editable del Top 3 y feedback rico.
+- [ ] Existe un perfil mínimo; faltan nombre visible, zona horaria, tema, áreas y preferencias.
+- [ ] Existe `is_reminder`; faltan permisos, programación y entrega de notificaciones.
+- [ ] La UI es responsive, pero aún no tiene la shell mobile-first final.
+- [ ] `description` se conserva por compatibilidad y se copia a `notes`; falta completar la transición en formularios y lecturas.
+- [ ] La autenticación funciona con contraseña; magic link es la siguiente opción recomendada y Google depende de configurar OAuth en Supabase.
+
+## Fases de construcción
+
+### Fase 0: Foundation de Mi Día
+
+- [ ] Definir navegación: Hoy, Calendario, Progreso, Ajustes y acción rápida central.
+- [ ] Consolidar tokens visuales, estados de carga/error/vacío y accesibilidad.
+- [ ] Definir cálculo de “hoy” usando la zona horaria del perfil.
+- [ ] Mantener hábitos fuera de las primeras pantallas de Mi Día, sin eliminar su código existente.
+
+**Criterio de salida:** la shell funciona en móvil y escritorio, los estados principales son accesibles y las fechas no dependen accidentalmente de UTC.
+
+### Fase 1: Autenticación y dominio de datos
+
+- [x] Añadir `areas` con nombre, color, icono y objetivo.
+- [x] Ampliar `tasks` con notas, área, prioridad, estado, horario, duración, Top 3 y recurrencia.
+- [x] Añadir `daily_reviews`, `user_points`, `achievements` y `user_achievements`.
+- [x] Añadir preferencias de perfil para zona horaria, tema y notificaciones.
+- [ ] Revisar y probar políticas RLS para todas las tablas nuevas.
+- [ ] Completar la migración de `description` a `notes` sin romper datos existentes.
+- [ ] Añadir magic link; habilitar Google solo si la configuración OAuth está disponible.
+
+**Criterio de salida:** un usuario autenticado puede crear y leer solo sus datos, y una tarea conserva un estado coherente entre `status` y `completed_at`.
+
+### Fase 2: Hoy
+
+- [x] Mostrar fecha localizada y saludo personalizado.
+- [x] Mostrar anillo de progreso diario.
+- [x] Mostrar Top 3 y timeline ordenado.
+- [x] Mostrar tareas pendientes sin fecha.
+- [ ] Crear captura rápida en modal con autofocus.
+- [ ] Permitir seleccionar, editar y reordenar el Top 3.
+- [ ] Añadir filtros por área, prioridad y estado.
+
+**Criterio de salida:** completar una tarea actualiza la lista y el porcentaje sin perder contexto ni afectar datos de otro usuario.
+
+### Fase 3: Interacciones y cierre del día
+
+- [ ] Añadir posponer a mañana, elegir fecha y eliminar mediante gesto/menú accesible.
+- [ ] Añadir recurrencia diaria, semanal y mensual.
+- [ ] Añadir tachado, confetti al completar el Top 3, háptica opcional y estados de error.
+- [ ] Otorgar puntos de forma idempotente y actualizar rachas por fecha local.
+- [ ] Crear formulario de review diaria de un minuto.
+
+**Riesgos:** doble asignación de puntos, cambios de zona horaria, accesibilidad de gestos y sincronización de tareas recurrentes.
+
+### Fase 4: Calendario
+
+- [ ] Vista semanal en móvil.
+- [ ] Vista mensual en escritorio.
+- [ ] Navegar a un día y crear/editar tareas desde ese contexto.
+- [ ] Mostrar carga diaria y colores de áreas.
+
+**Criterio de salida:** el mismo dato de tarea se representa igual en Hoy, Calendario y la captura rápida.
+
+### Fase 5: Progreso
+
+- [ ] Gráfico semanal de tareas completadas por día.
+- [ ] Racha actual y puntos acumulados.
+- [ ] Logros: primera tarea, racha de 3 días, semana perfecta y 10 tareas en un día.
+- [ ] Resumen semanal por área.
+
+### Fase 6: Ajustes
+
+- [ ] Perfil: nombre visible y zona horaria.
+- [ ] Gestión de áreas con color, icono y objetivo.
+- [ ] Tema claro, oscuro y automático.
+- [ ] Activar/desactivar recordatorios.
+- [ ] Cerrar sesión.
+
+### Fase 7: PWA y notificaciones
+
+- [ ] Manifest con iconos 192, 512 y maskable; `display: standalone` y `theme_color` índigo.
+- [ ] Service worker para cachear el app shell.
+- [ ] Definir datos guardados y límites del modo offline antes de implementar sincronización.
+- [ ] Solicitar permiso de notificaciones de forma explícita.
+- [ ] Programar recordatorios, resumen matutino y cierre nocturno mediante proveedor/cron.
+
+**Criterio de salida:** la app es instalable, el shell puede abrirse sin red y las notificaciones fallan de forma visible y recuperable cuando no hay permisos.
+
+## Después del MVP
+
+- [ ] Hábitos y analítica de hábitos.
+- [ ] Notas/knowledge base.
+- [ ] Google Calendar y otras integraciones.
+- [ ] Finanzas.
+- [ ] Multiusuario y colaboración.
+- [ ] IA para planificación, smart scheduling y voz.
+- [ ] Plantillas y rutinas compartibles.
+- [ ] Informes de auditoría de vida.
+
+## Reglas de implementación
+
+- Mantener RLS y verificar `user_id` en cada acción de servidor.
+- Usar resultados `{ success: true }` o `{ error: string }` en Server Actions.
+- Revalidar rutas localizadas después de cada mutación.
+- Probar móvil y escritorio para cada pantalla nueva.
+- Preferir una app online estable antes de añadir sincronización offline completa.

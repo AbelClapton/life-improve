@@ -7,7 +7,14 @@ export const createTask = async (locale: string, formData: FormData) =>
   await withUser(async (user, supabase) => {
     const title = formData.get('title') as string
     const description = formData.get('description') as string
+    const notes = formData.get('notes') as string
+    const areaId = formData.get('area_id') as string
+    const priority = formData.get('priority') as string
     const due_at = formData.get('due_at') as string
+    const start_at = formData.get('start_at') as string
+    const durationMin = formData.get('duration_min') as string
+    const isTopThree = formData.get('is_top_three') === 'on'
+    const recurrence = formData.get('recurrence') as string
     const is_reminder = formData.get('is_reminder') === 'on'
 
     const { error } = await supabase
@@ -16,7 +23,14 @@ export const createTask = async (locale: string, formData: FormData) =>
         user_id: user.id,
         title,
         description,
+        notes: notes || description || null,
+        area_id: areaId || null,
+        priority: priority || 'medium',
         due_at: due_at || null,
+        start_at: start_at || null,
+        duration_min: durationMin ? Number(durationMin) : null,
+        is_top_three: isTopThree,
+        recurrence: recurrence || 'none',
         is_reminder,
       })
 
@@ -31,7 +45,10 @@ export const toggleTask = async (locale: string, taskId: string, completed: bool
   await withUser(async (user, supabase) => {
     const { error } = await supabase
       .from('tasks')
-      .update({ completed_at: completed ? new Date().toISOString() : null })
+      .update({
+        completed_at: completed ? new Date().toISOString() : null,
+        status: completed ? 'completed' : 'pending',
+      })
       .eq('id', taskId)
       .eq('user_id', user.id)
 
