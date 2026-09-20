@@ -117,7 +117,6 @@ export const updateTask = async (locale: string, taskId: string, formData: FormD
         duration_min: parsedDuration,
         recurrence,
         is_reminder,
-        updated_at: new Date().toISOString(),
       })
       .eq('id', taskId)
       .eq('user_id', user.id)
@@ -142,7 +141,7 @@ export const postponeTask = async (locale: string, taskId: string) =>
 
     const { data: postponedTask, error } = await supabase
       .from('tasks')
-      .update({ due_at: dueAt, status: 'postponed', completed_at: null, updated_at: new Date().toISOString() })
+      .update({ due_at: dueAt, status: 'postponed' })
       .eq('id', taskId)
       .eq('user_id', user.id)
       .neq('status', 'completed')
