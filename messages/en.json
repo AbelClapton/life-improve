@@ -100,7 +100,8 @@
       "medium": "Medium priority",
       "low": "Low priority"
     },
-    "empty": "No tasks found."
+    "empty": "No tasks found.",
+    "back_to_calendar": "Back to calendar"
   },
   "Habits": {
     "title": "Habits",

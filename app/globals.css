@@ -541,6 +541,13 @@ textarea:focus-visible {
   text-transform: capitalize;
 }
 
+.calendar-day-add {
+  color: var(--accent);
+  display: inline-flex;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
 .calendar-task {
   align-items: flex-start;
   background: var(--surface);

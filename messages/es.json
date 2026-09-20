@@ -100,7 +100,8 @@
       "medium": "Prioridad media",
       "low": "Prioridad baja"
     },
-    "empty": "No se encontraron tareas."
+    "empty": "No se encontraron tareas.",
+    "back_to_calendar": "Volver al calendario"
   },
   "Habits": {
     "title": "Hábitos",

@@ -101,6 +101,12 @@ export default async function CalendarPage({ params, searchParams }: { params: P
                   <strong>{dayLabel}</strong>
                   {day === today && <span className="eyebrow">{t('today')}</span>}
                 </div>
+                <Link
+                  className="calendar-day-add"
+                  href={`/${locale}/tasks?due_at=${day}T09%3A00&calendar_view=${view}&calendar_date=${anchorDate}`}
+                >
+                  {t('add_task')}
+                </Link>
                 {dayTasks.length > 0 ? dayTasks.map(task => (
                   <article key={task.id} className="calendar-task">
                     <span className="area-dot" style={{ background: task.areas?.[0]?.color || 'var(--accent)' }} />
@@ -115,7 +121,7 @@ export default async function CalendarPage({ params, searchParams }: { params: P
             );
           })}
         </div>
-        <Link className="primary-button inline-flex mt-6" href={`/${locale}/tasks`}>{t('add_task')}</Link>
+        <Link className="primary-button inline-flex mt-6" href={`/${locale}/tasks?calendar_view=${view}&calendar_date=${anchorDate}`}>{t('add_task')}</Link>
       </section>
     </div>
   );

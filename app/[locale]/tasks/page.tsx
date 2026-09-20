@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
 import { createClientServer } from '@/lib/supabase-server';
 import { createTask, toggleTask, deleteTask } from '../../actions';
 import { TopThreeControls } from '@/app/components/top-three-controls';
@@ -9,7 +10,7 @@ function firstSearchParam(value: SearchParam) {
   return Array.isArray(value) ? value[0] : value;
 }
 
-export default async function TasksPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ area?: SearchParam; priority?: SearchParam; status?: SearchParam }> }) {
+export default async function TasksPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ area?: SearchParam; priority?: SearchParam; status?: SearchParam; due_at?: SearchParam; calendar_view?: SearchParam; calendar_date?: SearchParam }> }) {
   const { locale } = await params;
   const common = await getTranslations('Common');
   const rawFilters = await searchParams;
@@ -18,6 +19,13 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
     priority: firstSearchParam(rawFilters.priority),
     status: firstSearchParam(rawFilters.status),
   };
+  const requestedDueAt = firstSearchParam(rawFilters.due_at);
+  const initialDueAt = requestedDueAt && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(requestedDueAt) ? requestedDueAt : '';
+  const calendarView = firstSearchParam(rawFilters.calendar_view);
+  const calendarDate = firstSearchParam(rawFilters.calendar_date);
+  const calendarHref = calendarView && calendarDate
+    ? `/${locale}/calendar?view=${calendarView === 'month' ? 'month' : 'week'}&date=${calendarDate}`
+    : `/${locale}/calendar`;
   const t = await getTranslations('Tasks');
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
@@ -48,6 +56,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
       <header className="page-heading">
         <span className="eyebrow">Make room for what matters</span>
         <h1 className="page-title">{t('title')}</h1>
+        {calendarView && calendarDate && <Link className="secondary-button inline-flex mt-4" href={calendarHref}>{t('back_to_calendar')}</Link>}
       </header>
 
       {/* Add Task Form */}
@@ -62,7 +71,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
           </div>
           <div className="space-y-2">
             <label className="field-label">{t('form.due_date')}</label>
-            <input name="due_at" type="datetime-local" className="field-input" />
+            <input name="due_at" type="datetime-local" className="field-input" defaultValue={initialDueAt} />
           </div>
           <div className="md:col-span-2 space-y-2">
             <label className="field-label">{t('form.description')}</label>
@@ -120,6 +129,11 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
       <section className="panel">
         <div className="panel-heading"><h2 className="panel-title">{t('list_title')}</h2><span className="eyebrow">{tasks?.length || 0}</span></div>
         <form method="get" className="task-filters">
+          {calendarView && calendarDate && <>
+            <input type="hidden" name="calendar_view" value={calendarView} />
+            <input type="hidden" name="calendar_date" value={calendarDate} />
+            {initialDueAt && <input type="hidden" name="due_at" value={initialDueAt} />}
+          </>}
           <label className="field-label">{t('filters.area')}<select name="area" className="field-input" defaultValue={filters.area || ''}><option value="">{t('filters.all')}</option><option value="__none__">{t('form.no_area')}</option>{areas?.map(area => <option key={area.id} value={area.id}>{area.name}</option>)}</select></label>
           <label className="field-label">{t('filters.priority')}<select name="priority" className="field-input" defaultValue={filters.priority || ''}><option value="">{t('filters.all')}</option><option value="high">{t('form.high')}</option><option value="medium">{t('form.medium')}</option><option value="low">{t('form.low')}</option></select></label>
           <label className="field-label">{t('filters.status')}<select name="status" className="field-input" defaultValue={filters.status || ''}><option value="">{t('filters.all')}</option><option value="pending">{t('filters.pending')}</option><option value="completed">{t('filters.completed')}</option><option value="postponed">{t('filters.postponed')}</option></select></label>
