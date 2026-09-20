@@ -205,6 +205,10 @@
     "password": "Contraseña",
     "signIn": "Iniciar sesión",
     "signUp": "Registrarse",
+    "magicLink": "Enviarme un enlace de acceso",
+    "magicLinkSent": "Revisa tu correo para acceder con el enlace.",
+    "magicLinkError": "El enlace no es válido o ha caducado.",
+    "authError": "No se pudo autenticar.",
     "loading": "Cargando..."
   }
 }

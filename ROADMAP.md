@@ -52,7 +52,7 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 - [x] Añadir preferencias de perfil para zona horaria, tema y notificaciones.
 - [x] Validar en Supabase Cloud el aislamiento RLS de tareas, eventos de completado y puntos con usuarios separados.
 - [x] Completar la migración de `description` a `notes` sin romper datos existentes.
-- [ ] Añadir magic link; habilitar Google solo si la configuración OAuth está disponible.
+- [x] Añadir magic link; habilitar Google solo si la configuración OAuth está disponible.
 
 **Criterio de salida:** un usuario autenticado puede crear y leer solo sus datos, y una tarea conserva un estado coherente entre `status` y `completed_at`.
 

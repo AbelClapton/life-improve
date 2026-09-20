@@ -205,6 +205,10 @@
     "password": "Password",
     "signIn": "Sign In",
     "signUp": "Sign Up",
+    "magicLink": "Email me a sign-in link",
+    "magicLinkSent": "Check your email for a sign-in link.",
+    "magicLinkError": "This sign-in link is invalid or expired.",
+    "authError": "Authentication failed.",
     "loading": "Loading..."
   }
 }
