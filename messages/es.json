@@ -66,6 +66,17 @@
       "submit": "Añadir tarea"
     },
     "list_title": "Todas las tareas",
+    "add_top_three": "Añadir al Top 3",
+    "remove_top_three": "Quitar del Top 3",
+    "filters": {
+      "area": "Área",
+      "priority": "Prioridad",
+      "status": "Estado",
+      "all": "Todas",
+      "pending": "Pendientes",
+      "completed": "Completadas",
+      "apply": "Filtrar"
+    },
     "due_prefix": "Fecha límite: {date}",
     "priority": {
       "high": "Prioridad alta",

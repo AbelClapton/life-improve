@@ -468,6 +468,34 @@ textarea:focus-visible {
   margin-bottom: 1rem;
 }
 
+.task-filters {
+  align-items: end;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.task-actions {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.icon-text-button {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--accent-dark);
+  cursor: pointer;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.5rem 0.65rem;
+}
+
 .color-input {
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -647,6 +675,14 @@ textarea:focus-visible {
 
   .settings-area-form {
     grid-template-columns: 1fr 3rem;
+  }
+
+  .task-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .task-filters .secondary-button {
+    grid-column: 1 / -1;
   }
 
   .settings-area-form .field-input:nth-child(3),

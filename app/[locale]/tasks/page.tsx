@@ -1,19 +1,23 @@
 import { getTranslations } from 'next-intl/server';
 import { createClientServer } from '@/lib/supabase-server';
-import { createTask, toggleTask, deleteTask } from '../../actions';
+import { createTask, toggleTask, deleteTask, setTaskTopThree } from '../../actions';
 
-export default async function TasksPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function TasksPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ area?: string; priority?: string; status?: string }> }) {
   const { locale } = await params;
+  const filters = await searchParams;
   const t = await getTranslations('Tasks');
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: tasks } = await supabase
+  let taskQuery = supabase
     .from('tasks')
     .select('*, areas(name, color)')
     .eq('user_id', user.id)
-    .order('due_at', { ascending: true });
+  if (filters.area) taskQuery = taskQuery.eq('area_id', filters.area);
+  if (filters.priority) taskQuery = taskQuery.eq('priority', filters.priority);
+  if (filters.status) taskQuery = taskQuery.eq('status', filters.status);
+  const { data: tasks } = await taskQuery.order('due_at', { ascending: true });
   const { data: areas } = await supabase
     .from('areas')
     .select('id, name, color')
@@ -95,7 +99,13 @@ export default async function TasksPage({ params }: { params: Promise<{ locale: 
 
       {/* Task List */}
       <section className="panel">
-        <div className="panel-heading"><h2 className="panel-title">{t('list_title')}</h2></div>
+        <div className="panel-heading"><h2 className="panel-title">{t('list_title')}</h2><span className="eyebrow">{tasks?.length || 0}</span></div>
+        <form method="get" className="task-filters">
+          <label className="field-label">{t('filters.area')}<select name="area" className="field-input" defaultValue={filters.area || ''}><option value="">{t('form.no_area')}</option>{areas?.map(area => <option key={area.id} value={area.id}>{area.name}</option>)}</select></label>
+          <label className="field-label">{t('filters.priority')}<select name="priority" className="field-input" defaultValue={filters.priority || ''}><option value="">{t('filters.all')}</option><option value="high">{t('form.high')}</option><option value="medium">{t('form.medium')}</option><option value="low">{t('form.low')}</option></select></label>
+          <label className="field-label">{t('filters.status')}<select name="status" className="field-input" defaultValue={filters.status || ''}><option value="">{t('filters.all')}</option><option value="pending">{t('filters.pending')}</option><option value="completed">{t('filters.completed')}</option></select></label>
+          <button type="submit" className="secondary-button">{t('filters.apply')}</button>
+        </form>
         <div className="space-y-4">
           {tasks && tasks.length > 0 ? (
             tasks.map(task => (
@@ -126,13 +136,14 @@ export default async function TasksPage({ params }: { params: Promise<{ locale: 
                     </p>
                   </div>
                 </div>
-                <form action={async () => {
-                  await deleteTask(locale, task.id)
-                }}>
-                  <button className="danger-action">
-                    {t('Common.actions.delete')}
-                  </button>
-                </form>
+                <div className="task-actions">
+                  <form action={async () => { await setTaskTopThree(locale, task.id, !task.is_top_three) }}>
+                    <button className={task.is_top_three ? 'secondary-button' : 'icon-text-button'}>{task.is_top_three ? t('remove_top_three') : t('add_top_three')}</button>
+                  </form>
+                  <form action={async () => { await deleteTask(locale, task.id) }}>
+                    <button className="danger-action">{t('Common.actions.delete')}</button>
+                  </form>
+                </div>
               </div>
             ))
           ) : (

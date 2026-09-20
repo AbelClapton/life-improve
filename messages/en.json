@@ -66,6 +66,17 @@
       "submit": "Add Task"
     },
     "list_title": "All Tasks",
+    "add_top_three": "Add to Top 3",
+    "remove_top_three": "Remove from Top 3",
+    "filters": {
+      "area": "Area",
+      "priority": "Priority",
+      "status": "Status",
+      "all": "All",
+      "pending": "Pending",
+      "completed": "Completed",
+      "apply": "Filter"
+    },
     "due_prefix": "Due: {date}",
     "priority": {
       "high": "High priority",
