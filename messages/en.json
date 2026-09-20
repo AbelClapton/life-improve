@@ -75,6 +75,7 @@
       "all": "All",
       "pending": "Pending",
       "completed": "Completed",
+      "postponed": "Postponed",
       "apply": "Filter"
     },
     "due_prefix": "Due: {date}",

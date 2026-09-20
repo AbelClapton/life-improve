@@ -5,6 +5,8 @@ import { revalidatePaths } from '@/lib/cache'
 import { withUser } from '@/lib/auth-wrapper'
 import { getDateInTimeZone } from '@/lib/date'
 
+const topThreeLimitMessage = 'You can only choose three top priorities.'
+
 export const createTask = async (locale: string, formData: FormData) =>
   await withUser(async (user, supabase) => {
     const title = formData.get('title') as string
@@ -37,7 +39,7 @@ export const createTask = async (locale: string, formData: FormData) =>
       })
 
     if (error) {
-      return { error: error.message }
+        return { error: error.message === 'TOP_THREE_LIMIT' ? topThreeLimitMessage : error.message }
     }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
     return { success: true }
@@ -74,7 +76,7 @@ export const deleteTask = async (locale: string, taskId: string) =>
       .eq('id', taskId)
       .eq('user_id', user.id)
 
-    if (error) return { error: error.message }
+    if (error) return { error: error.message === 'TOP_THREE_LIMIT' ? topThreeLimitMessage : error.message }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
     return { success: true }
   })

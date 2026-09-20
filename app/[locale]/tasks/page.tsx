@@ -2,9 +2,20 @@ import { getTranslations } from 'next-intl/server';
 import { createClientServer } from '@/lib/supabase-server';
 import { createTask, toggleTask, deleteTask, setTaskTopThree } from '../../actions';
 
-export default async function TasksPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ area?: string; priority?: string; status?: string }> }) {
+type SearchParam = string | string[] | undefined;
+
+function firstSearchParam(value: SearchParam) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function TasksPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ area?: SearchParam; priority?: SearchParam; status?: SearchParam }> }) {
   const { locale } = await params;
-  const filters = await searchParams;
+  const rawFilters = await searchParams;
+  const filters = {
+    area: firstSearchParam(rawFilters.area),
+    priority: firstSearchParam(rawFilters.priority),
+    status: firstSearchParam(rawFilters.status),
+  };
   const t = await getTranslations('Tasks');
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
@@ -14,7 +25,8 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
     .from('tasks')
     .select('*, areas(name, color)')
     .eq('user_id', user.id)
-  if (filters.area) taskQuery = taskQuery.eq('area_id', filters.area);
+  if (filters.area === '__none__') taskQuery = taskQuery.is('area_id', null);
+  else if (filters.area) taskQuery = taskQuery.eq('area_id', filters.area);
   if (filters.priority) taskQuery = taskQuery.eq('priority', filters.priority);
   if (filters.status) taskQuery = taskQuery.eq('status', filters.status);
   const { data: tasks } = await taskQuery.order('due_at', { ascending: true });
@@ -101,9 +113,9 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
       <section className="panel">
         <div className="panel-heading"><h2 className="panel-title">{t('list_title')}</h2><span className="eyebrow">{tasks?.length || 0}</span></div>
         <form method="get" className="task-filters">
-          <label className="field-label">{t('filters.area')}<select name="area" className="field-input" defaultValue={filters.area || ''}><option value="">{t('form.no_area')}</option>{areas?.map(area => <option key={area.id} value={area.id}>{area.name}</option>)}</select></label>
+          <label className="field-label">{t('filters.area')}<select name="area" className="field-input" defaultValue={filters.area || ''}><option value="">{t('filters.all')}</option><option value="__none__">{t('form.no_area')}</option>{areas?.map(area => <option key={area.id} value={area.id}>{area.name}</option>)}</select></label>
           <label className="field-label">{t('filters.priority')}<select name="priority" className="field-input" defaultValue={filters.priority || ''}><option value="">{t('filters.all')}</option><option value="high">{t('form.high')}</option><option value="medium">{t('form.medium')}</option><option value="low">{t('form.low')}</option></select></label>
-          <label className="field-label">{t('filters.status')}<select name="status" className="field-input" defaultValue={filters.status || ''}><option value="">{t('filters.all')}</option><option value="pending">{t('filters.pending')}</option><option value="completed">{t('filters.completed')}</option></select></label>
+          <label className="field-label">{t('filters.status')}<select name="status" className="field-input" defaultValue={filters.status || ''}><option value="">{t('filters.all')}</option><option value="pending">{t('filters.pending')}</option><option value="completed">{t('filters.completed')}</option><option value="postponed">{t('filters.postponed')}</option></select></label>
           <button type="submit" className="secondary-button">{t('filters.apply')}</button>
         </form>
         <div className="space-y-4">

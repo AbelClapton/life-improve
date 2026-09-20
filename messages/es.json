@@ -75,6 +75,7 @@
       "all": "Todas",
       "pending": "Pendientes",
       "completed": "Completadas",
+      "postponed": "Pospuestas",
       "apply": "Filtrar"
     },
     "due_prefix": "Fecha límite: {date}",
