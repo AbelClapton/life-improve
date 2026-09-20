@@ -33,43 +33,44 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="p-8 bg-white rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-6 text-center">{t('title')}</h1>
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="panel w-full max-w-md">
+        <span className="eyebrow">A quieter way to organize</span>
+        <h1 className="page-title text-4xl mb-8">{t('title')}</h1>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">{t('email')}</label>
+            <label className="field-label">{t('email')}</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded mt-1"
+              className="field-input"
               placeholder="email@example.com"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">{t('password')}</label>
+            <label className="field-label">{t('password')}</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border rounded mt-1"
+              className="field-input"
               placeholder="••••••••"
             />
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-sm" style={{ color: 'var(--coral)' }}>{error}</p>}
           <div className="flex gap-2">
             <button
               onClick={() => handleAuth('signIn')}
               disabled={loading}
-              className="flex-1 bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:bg-blue-300"
+              className="primary-button flex-1 disabled:opacity-50"
             >
               {loading ? t('loading') : t('signIn')}
             </button>
             <button
               onClick={() => handleAuth('signUp')}
               disabled={loading}
-              className="flex-1 bg-gray-200 text-gray-700 p-2 rounded hover:bg-gray-300 disabled:bg-gray-100"
+              className="secondary-button flex-1 disabled:opacity-50"
             >
               {t('signUp')}
             </button>
