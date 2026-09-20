@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import Link from 'next/link';
 import { CalendarDays, ChartNoAxesColumn, CirclePlus, House, Settings, Sparkles } from 'lucide-react';
+import { PwaRegister } from '@/app/components/pwa-register';
 import './../globals.css';
 
 export default async function RootLayout({
@@ -18,6 +19,7 @@ export default async function RootLayout({
     <html lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
+          <PwaRegister />
           <div className="app-shell">
             <header className="app-header">
               <div className="app-header-inner">
