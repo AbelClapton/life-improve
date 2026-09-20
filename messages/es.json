@@ -107,7 +107,18 @@
     "timezone": "Zona horaria",
     "theme": "Tema",
     "not_set": "Sin definir",
-    "next_step": "La edición de preferencias y la gestión de áreas son el siguiente paso."
+    "profile_title": "Perfil",
+    "theme_system": "Automático",
+    "theme_light": "Claro",
+    "theme_dark": "Oscuro",
+    "notifications": "Activar recordatorios",
+    "save": "Guardar preferencias",
+    "areas_title": "Áreas de vida",
+    "area_name": "Nombre del área",
+    "area_color": "Color del área",
+    "area_goal": "Meta opcional",
+    "add_area": "Añadir área",
+    "delete_area": "Eliminar"
   },
   "Login": {
     "title": "Organizador de vida",

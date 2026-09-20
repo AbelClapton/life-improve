@@ -70,6 +70,63 @@ export const deleteTask = async (locale: string, taskId: string) =>
     return { success: true }
   })
 
+export const updateProfile = async (locale: string, formData: FormData) =>
+  await withUser(async (user, supabase) => {
+    const displayName = String(formData.get('display_name') || '').trim()
+    const timezone = String(formData.get('timezone') || 'Europe/Madrid')
+    const theme = String(formData.get('theme') || 'system')
+    const notificationsEnabled = formData.get('notifications_enabled') === 'on'
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        display_name: displayName || null,
+        timezone,
+        theme,
+        notifications_enabled: notificationsEnabled,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', user.id)
+
+    if (error) return { error: error.message }
+    revalidatePaths([`/${locale}/settings`])
+    return { success: true }
+  })
+
+export const createArea = async (locale: string, formData: FormData) =>
+  await withUser(async (user, supabase) => {
+    const name = String(formData.get('name') || '').trim()
+    const color = String(formData.get('color') || '#6366f1')
+    const icon = String(formData.get('icon') || 'circle')
+    const goal = String(formData.get('goal') || '').trim()
+
+    if (!name) return { error: 'Area name is required.' }
+    const { error } = await supabase.from('areas').insert({
+      user_id: user.id,
+      name,
+      color,
+      icon,
+      goal: goal || null,
+    })
+
+    if (error) return { error: error.message }
+    revalidatePaths([`/${locale}/settings`, `/${locale}/tasks`])
+    return { success: true }
+  })
+
+export const deleteArea = async (locale: string, areaId: string) =>
+  await withUser(async (user, supabase) => {
+    const { error } = await supabase
+      .from('areas')
+      .delete()
+      .eq('id', areaId)
+      .eq('user_id', user.id)
+
+    if (error) return { error: error.message }
+    revalidatePaths([`/${locale}/settings`, `/${locale}/tasks`])
+    return { success: true }
+  })
+
 export const createHabit = async (locale: string, formData: FormData) =>
   await withUser(async (user, supabase) => {
     const name = formData.get('name') as string
