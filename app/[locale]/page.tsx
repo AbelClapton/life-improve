@@ -138,7 +138,23 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
           <button className="primary-button" type="submit">{t('save_review')}</button>
         </form>
       </section>
-      <QuickCapture locale={locale} label={t('quick_capture')} />
+      <QuickCapture
+        locale={locale}
+        label={t('quick_capture')}
+        labels={{
+          title: t('quick_title'),
+          close: t('quick_close'),
+          date: t('quick_date'),
+          priority: t('quick_priority'),
+          priorityHigh: t('quick_priority_high'),
+          priorityMedium: t('quick_priority_medium'),
+          priorityLow: t('quick_priority_low'),
+          topThree: t('quick_top_three'),
+          saving: t('quick_saving'),
+          save: t('quick_save'),
+          unableToSave: t('quick_unable_to_save'),
+        }}
+      />
     </div>
   );
 }
