@@ -8,8 +8,8 @@ type TaskCreateLabels = {
   title: string
   titlePlaceholder: string
   dueDate: string
-  description: string
-  descriptionPlaceholder: string
+  notes: string
+  notesPlaceholder: string
   area: string
   noArea: string
   priority: string
@@ -73,8 +73,8 @@ export function TaskCreateForm({ locale, areas, initialDueAt, labels }: { locale
         <input id="create-task-due" name="due_at" type="datetime-local" className="field-input" defaultValue={initialDueAt} />
       </div>
       <div className="md:col-span-2 space-y-2">
-        <label className="field-label" htmlFor="create-task-description">{labels.description}</label>
-        <textarea id="create-task-description" name="description" className="field-input" placeholder={labels.descriptionPlaceholder} />
+        <label className="field-label" htmlFor="create-task-notes">{labels.notes}</label>
+        <textarea id="create-task-notes" name="notes" className="field-input" placeholder={labels.notesPlaceholder} />
       </div>
       <div className="space-y-2">
         <label className="field-label" htmlFor="area_id">{labels.area}</label>

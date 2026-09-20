@@ -62,7 +62,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
   const editLabels = {
     title: t('edit_task'),
     taskTitle: t('form.title'),
-    notes: t('form.description'),
+    notes: t('form.notes'),
     area: t('form.area'),
     noArea: t('form.no_area'),
     priority: t('form.priority'),
@@ -108,7 +108,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
           initialDueAt={initialDueAt}
           labels={{
             title: t('form.title'), titlePlaceholder: t('form.title_placeholder'), dueDate: t('form.due_date'),
-            description: t('form.description'), descriptionPlaceholder: t('form.description_placeholder'),
+            notes: t('form.notes'), notesPlaceholder: t('form.notes_placeholder'),
             area: t('form.area'), noArea: t('form.no_area'), priority: t('form.priority'), high: t('form.high'),
             medium: t('form.medium'), low: t('form.low'), startTime: t('form.start_time'), duration: t('form.duration'),
             recurrence: t('form.recurrence'), none: t('form.none'), daily: t('form.daily'), weekly: t('form.weekly'),

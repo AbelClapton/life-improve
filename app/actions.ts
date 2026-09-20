@@ -19,8 +19,7 @@ function mapTopThreeError(message: string) {
 export const createTask = async (locale: string, formData: FormData) =>
   await withUser(async (user, supabase) => {
     const title = String(formData.get('title') || '').trim()
-    const description = formData.get('description') as string
-    const notes = formData.get('notes') as string
+    const notes = String(formData.get('notes') || formData.get('description') || '').trim()
     const areaId = formData.get('area_id') as string
     const priority = formData.get('priority') as string
     const due_at = formData.get('due_at') as string
@@ -54,8 +53,7 @@ export const createTask = async (locale: string, formData: FormData) =>
       .insert({
         user_id: user.id,
         title,
-        description,
-        notes: notes || description || null,
+        notes: notes || null,
         area_id: areaId || null,
         priority: priority || 'medium',
         due_at: dueAt,

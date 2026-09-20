@@ -74,7 +74,7 @@ export default async function CalendarPage({ params, searchParams }: { params: P
   const editLabels = {
     title: taskT('edit_task'),
     taskTitle: taskT('form.title'),
-    notes: taskT('form.description'),
+    notes: taskT('form.notes'),
     area: taskT('form.area'),
     noArea: taskT('form.no_area'),
     priority: taskT('form.priority'),
