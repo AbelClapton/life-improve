@@ -25,7 +25,7 @@ export function localDateTimeToUtc(value: string, timeZone: string) {
   const [, year, month, day, hour, minute] = match
   const dateKey = `${year}-${month}-${day}`
   const date = new Date(`${dateKey}T12:00:00Z`)
-  if (getDateInTimeZone(date, 'UTC') !== dateKey || Number(hour) > 23 || Number(minute) > 59) return null
+  if (Number.isNaN(date.getTime()) || getDateInTimeZone(date, 'UTC') !== dateKey || Number(hour) > 23 || Number(minute) > 59) return null
 
   const localTimestamp = Date.parse(`${value}:00Z`)
 

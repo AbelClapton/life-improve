@@ -129,14 +129,16 @@ export const updateTask = async (locale: string, taskId: string, formData: FormD
     return { success: true }
   })
 
-export const postponeTask = async (locale: string, taskId: string) =>
+export const postponeTask = async (locale: string, taskId: string, targetDate: string) =>
   await withUser(async (user, supabase) => {
     const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single()
     const timeZone = profile?.timezone || 'Europe/Madrid'
     const today = getDateInTimeZone(new Date(), timeZone)
-    const tomorrow = new Date(`${today}T12:00:00Z`)
-    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
-    const dueAt = localDateTimeToUtc(`${tomorrow.toISOString().slice(0, 10)}T09:00`, timeZone)
+    const tomorrowDate = new Date(`${today}T12:00:00Z`)
+    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1)
+    const minimumDate = tomorrowDate.toISOString().slice(0, 10)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(targetDate) || targetDate < minimumDate) return { error: 'invalid_datetime' }
+    const dueAt = localDateTimeToUtc(`${targetDate}T09:00`, timeZone)
     if (!dueAt) return { error: 'invalid_datetime' }
 
     const { data: postponedTask, error } = await supabase
@@ -174,7 +176,7 @@ export const toggleTask = async (locale: string, taskId: string, completed: bool
     })
 
     if (error) return { error: error.message }
-    revalidatePaths([`/${locale}`, `/${locale}/tasks`, `/${locale}/calendar`])
+    revalidatePaths([`/${locale}`, `/${locale}/tasks`, `/${locale}/calendar`, `/${locale}/progress`])
     return { success: true }
   })
 
@@ -187,7 +189,7 @@ export const deleteTask = async (locale: string, taskId: string) =>
       .eq('user_id', user.id)
 
     if (error) return { error: error.message }
-    revalidatePaths([`/${locale}`, `/${locale}/tasks`, `/${locale}/calendar`])
+    revalidatePaths([`/${locale}`, `/${locale}/tasks`, `/${locale}/calendar`, `/${locale}/progress`])
     return { success: true }
   })
 

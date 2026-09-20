@@ -2,11 +2,13 @@ import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClientServer } from '@/lib/supabase-server';
-import { toggleTask, deleteTask } from '../../actions';
+import { toggleTask } from '../../actions';
 import { TopThreeControls } from '@/app/components/top-three-controls';
 import { TaskEditDialog } from '@/app/components/task-edit-dialog';
 import { TaskCreateForm } from '@/app/components/task-create-form';
 import { TaskPostponeButton } from '@/app/components/task-postpone-button';
+import { TaskDeleteButton } from '@/app/components/task-delete-button';
+import { getDateInTimeZone } from '@/lib/date';
 
 type SearchParam = string | string[] | undefined;
 
@@ -36,6 +38,9 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
   if (!user) redirect(`/${locale}/login`);
   const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single();
   const timeZone = profile?.timezone || 'Europe/Madrid';
+  const tomorrow = new Date(`${getDateInTimeZone(new Date(), timeZone)}T12:00:00Z`);
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  const defaultPostponeDate = tomorrow.toISOString().slice(0, 10);
 
   let taskQuery = supabase
     .from('tasks')
@@ -182,10 +187,8 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
                   labels={editLabels}
                 />
                 <div className="task-actions">
-                  {task.status !== 'completed' && !task.completed_at && <TaskPostponeButton locale={locale} taskId={task.id} label={t('postpone')} errorLabel={t('unable_to_save')} />}
-                  <form action={async () => { await deleteTask(locale, task.id) }}>
-                    <button className="danger-action">{common('actions.delete')}</button>
-                  </form>
+                  {task.status !== 'completed' && !task.completed_at && <TaskPostponeButton locale={locale} taskId={task.id} defaultDate={defaultPostponeDate} label={t('postpone')} dateLabel={t('postpone_date')} errorLabel={t('unable_to_save')} />}
+                  <TaskDeleteButton locale={locale} taskId={task.id} label={common('actions.delete')} confirmLabel={t('confirm_delete')} errorLabel={t('unable_to_save')} />
                 </div>
               </div>
             ))
