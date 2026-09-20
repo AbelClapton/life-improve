@@ -3,6 +3,7 @@ import { getMessages, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { CalendarDays, ChartNoAxesColumn, CirclePlus, House, Settings, Sparkles } from 'lucide-react';
 import { PwaRegister } from '@/app/components/pwa-register';
+import { createClientServer } from '@/lib/supabase-server';
 import './../globals.css';
 
 export default async function RootLayout({
@@ -15,9 +16,15 @@ export default async function RootLayout({
   const { locale } = await params;
   const messages = await getMessages();
   const t = await getTranslations('Common');
+  const supabase = await createClientServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from('profiles').select('theme').eq('id', user.id).maybeSingle()
+    : { data: null };
+  const theme = profile?.theme || 'system';
 
   return (
-    <html lang={locale}>
+    <html lang={locale} data-theme={theme}>
       <body>
         <NextIntlClientProvider messages={messages}>
           <PwaRegister />

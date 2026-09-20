@@ -8,7 +8,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await supabase.from('profiles').select('username, display_name, timezone, theme').eq('id', user.id).single();
+  const { data: profile } = await supabase.from('profiles').select('username, display_name, timezone, theme, notifications_enabled').eq('id', user.id).single();
   const { data: areas } = await supabase.from('areas').select('id, name, color, icon, goal').eq('user_id', user.id).order('name');
 
   return (
@@ -25,7 +25,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
           <label className="field-label">{t('display_name')}<input name="display_name" className="field-input" defaultValue={profile?.display_name || ''} /></label>
           <label className="field-label">{t('timezone')}<input name="timezone" className="field-input" defaultValue={profile?.timezone || 'Europe/Madrid'} /></label>
           <label className="field-label">{t('theme')}<select name="theme" className="field-input" defaultValue={profile?.theme || 'system'}><option value="system">{t('theme_system')}</option><option value="light">{t('theme_light')}</option><option value="dark">{t('theme_dark')}</option></select></label>
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="notifications_enabled" defaultChecked />{t('notifications')}</label>
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="notifications_enabled" defaultChecked={profile?.notifications_enabled ?? true} />{t('notifications')}</label>
           <button className="primary-button" type="submit">{t('save')}</button>
         </form>
       </section>
