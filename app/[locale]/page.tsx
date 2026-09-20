@@ -1,8 +1,9 @@
 import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
-import { saveDailyReview, toggleTask } from '@/app/actions';
+import { saveDailyReview } from '@/app/actions';
 import { QuickCapture } from '@/app/components/quick-capture';
+import { TaskCompletionButton } from '@/app/components/task-completion-button';
 import { getDateInTimeZone, getUtcStartForDate, getUtcStartForNextDate } from '@/lib/date';
 
 export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
@@ -65,13 +66,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
             <ul className="space-y-3">
               {topThree.map(task => (
                 <li key={task.id} className="task-row">
-                  <form action={async () => { await toggleTask(locale, task.id, !task.completed_at) }}>
-                    <button className={`task-check ${task.completed_at ? 'task-check-done' : ''}`} aria-label={task.completed_at ? t('mark_pending') : t('mark_done')}>
-                      {task.completed_at ? '✓' : ''}
-                    </button>
-                  </form>
-                  <span className={task.completed_at ? 'line-through muted-copy' : ''}>{task.title}</span>
-                  <span className="area-dot" style={{ background: task.areas?.color || 'var(--accent)' }} title={task.areas?.name || t('no_area')} />
+                  <TaskCompletionButton locale={locale} taskId={task.id} completed={!!task.completed_at} isTopThree markDoneLabel={t('mark_done')} markPendingLabel={t('mark_pending')} errorLabel={t('quick_unable_to_save')} content={<><span>{task.title}</span><span className="area-dot" style={{ background: task.areas?.color || 'var(--accent)' }} title={task.areas?.name || t('no_area')} /></>} />
                 </li>
               ))}
             </ul>
@@ -89,21 +84,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
                   {(() => {
                     const isCompleted = task.status === 'completed' || !!task.completed_at
                     return <>
-                  <form action={async () => {
-                    await toggleTask(locale, task.id, !isCompleted)
-                  }}>
-                    <button
-                      type="submit"
-                      className={`task-check ${isCompleted ? 'task-check-done' : ''}`}
-                      aria-label={isCompleted ? t('mark_pending') : t('mark_done')}
-                    >
-                      {isCompleted ? '✓' : ''}
-                    </button>
-                  </form>
-                  <span className={isCompleted ? 'line-through muted-copy' : ''}>
-                    {task.title}
-                  </span>
-                  <span className="muted-copy">{new Date(task.due_at).toLocaleTimeString(locale, { timeZone, hour: 'numeric', minute: '2-digit' })}</span>
+                  <TaskCompletionButton locale={locale} taskId={task.id} completed={isCompleted} markDoneLabel={t('mark_done')} markPendingLabel={t('mark_pending')} errorLabel={t('quick_unable_to_save')} content={<><span>{task.title}</span><span className="muted-copy">{new Date(task.due_at).toLocaleTimeString(locale, { timeZone, hour: 'numeric', minute: '2-digit' })}</span></>} />
                     </>
                   })()}
                 </li>
@@ -120,12 +101,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
             <ul className="space-y-3">
               {pendingTasks.map(task => (
                 <li key={task.id} className="list-row">
-                  <span>{task.title}</span>
-                  <form action={async () => {
-                    await toggleTask(locale, task.id, true)
-                  }}>
-                    <button className="secondary-button">{t('mark_done')}</button>
-                  </form>
+                  <TaskCompletionButton locale={locale} taskId={task.id} completed={false} markDoneLabel={t('mark_done')} markPendingLabel={t('mark_pending')} errorLabel={t('quick_unable_to_save')} content={task.title} className="secondary-button">{t('mark_done')}</TaskCompletionButton>
                 </li>
               ))}
             </ul>

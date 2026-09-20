@@ -255,6 +255,21 @@ textarea:focus-visible {
   gap: 0.75rem;
 }
 
+.task-completion-form {
+  display: inline-flex;
+}
+
+.task-completion-content {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.75rem;
+}
+
+.task-completion-content-done {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
 .task-check {
   align-items: center;
   background: transparent;
@@ -271,6 +286,50 @@ textarea:focus-visible {
 .task-check-done {
   background: var(--accent);
   border-color: var(--accent);
+}
+
+.task-check:disabled,
+.secondary-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.completion-confetti {
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 20;
+}
+
+.completion-confetti i {
+  animation: completion-confetti 760ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  background: var(--accent);
+  height: 0.45rem;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  width: 0.25rem;
+}
+
+.completion-confetti i:nth-child(2n) { background: var(--coral); }
+.completion-confetti i:nth-child(1) { --x: -5rem; --y: -4rem; transform: rotate(18deg); }
+.completion-confetti i:nth-child(2) { --x: 4rem; --y: -5rem; transform: rotate(72deg); }
+.completion-confetti i:nth-child(3) { --x: 7rem; --y: -1rem; transform: rotate(126deg); }
+.completion-confetti i:nth-child(4) { --x: -7rem; --y: -1rem; transform: rotate(164deg); }
+.completion-confetti i:nth-child(5) { --x: -3rem; --y: 4rem; transform: rotate(218deg); }
+.completion-confetti i:nth-child(6) { --x: 3rem; --y: 4rem; transform: rotate(254deg); }
+.completion-confetti i:nth-child(7) { --x: 8rem; --y: 3rem; transform: rotate(298deg); }
+.completion-confetti i:nth-child(8) { --x: -8rem; --y: 3rem; transform: rotate(340deg); }
+.completion-confetti i:nth-child(9) { --x: 1rem; --y: -6rem; transform: rotate(24deg); }
+.completion-confetti i:nth-child(10) { --x: -1rem; --y: 6rem; transform: rotate(84deg); }
+
+@keyframes completion-confetti {
+  from { opacity: 1; transform: translate(0, 0) rotate(0); }
+  to { opacity: 0; transform: translate(var(--x), var(--y)) rotate(180deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .completion-confetti { display: none; }
 }
 
 .area-dot {

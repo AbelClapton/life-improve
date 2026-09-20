@@ -73,7 +73,7 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 - [x] Añadir posponer a mañana.
 - [x] Permitir elegir fecha y eliminar mediante controles accesibles.
 - [x] Añadir recurrencia diaria, semanal y mensual.
-- [ ] Añadir tachado, confetti al completar el Top 3 y háptica opcional.
+- [x] Añadir tachado, confetti al completar el Top 3 y háptica opcional.
 - [x] Mostrar estados básicos de error.
 - [ ] Otorgar puntos de forma idempotente y actualizar rachas por fecha local.
 - [x] Crear formulario de review diaria de un minuto.

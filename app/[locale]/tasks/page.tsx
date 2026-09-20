@@ -2,8 +2,8 @@ import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClientServer } from '@/lib/supabase-server';
-import { toggleTask } from '../../actions';
 import { TopThreeControls } from '@/app/components/top-three-controls';
+import { TaskCompletionButton } from '@/app/components/task-completion-button';
 import { TaskEditDialog } from '@/app/components/task-edit-dialog';
 import { TaskCreateForm } from '@/app/components/task-create-form';
 import { TaskPostponeButton } from '@/app/components/task-postpone-button';
@@ -138,21 +138,8 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
             tasks.map(task => (
               <div key={task.id} className="list-row">
                 <div className="flex items-center gap-3">
-                  <form action={async () => {
-                    await toggleTask(locale, task.id, !(task.status === 'completed' || task.completed_at))
-                  }}>
-                    <button
-                      type="submit"
-                      className={`task-check ${task.status === 'completed' || task.completed_at ? 'task-check-done' : ''}`}
-                      aria-label={task.status === 'completed' || task.completed_at ? t('mark_pending') : t('mark_done')}
-                    >
-                      {task.status === 'completed' || task.completed_at ? '✓' : ''}
-                    </button>
-                  </form>
-                  <div className="flex flex-col">
-                    <p className={task.status === 'completed' || task.completed_at ? 'line-through text-gray-400' : 'font-medium'}>
-                      {task.title}
-                    </p>
+                  <TaskCompletionButton locale={locale} taskId={task.id} completed={task.status === 'completed' || !!task.completed_at} isTopThree={!!task.is_top_three} markDoneLabel={t('mark_done')} markPendingLabel={t('mark_pending')} errorLabel={t('unable_to_save')} content={<div className="flex flex-col">
+                    <p>{task.title}</p>
                     {task.due_at && (
                       <p className="muted-copy">
                         {t('due_prefix', { date: new Date(task.due_at).toLocaleString(locale, { timeZone }) })}
@@ -162,7 +149,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
                       <span className="area-label"><span className="area-dot" style={{ background: task.areas?.color || 'var(--accent)' }} />{task.areas?.name || t('form.no_area')}</span>
                       <span>{t(`priority.${task.priority || 'medium'}`)}</span>
                     </p>
-                  </div>
+                  </div>} />
                 </div>
                 <TopThreeControls
                   locale={locale}
