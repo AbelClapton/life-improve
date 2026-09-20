@@ -94,9 +94,9 @@
     "week_label": "Esta semana",
     "completed_tasks": "tareas completadas",
     "streak_label": "Racha actual",
-    "streak_placeholder": "El seguimiento de rachas llega con los puntos.",
-    "coming_title": "Más señales de progreso",
-    "coming_copy": "Las barras semanales, áreas, puntos y logros son el siguiente paso."
+    "streak_days": "días activos consecutivos",
+    "week_chart": "Completadas esta semana",
+    "points": "Puntos"
   },
   "Settings": {
     "eyebrow": "Hazlo tuyo",

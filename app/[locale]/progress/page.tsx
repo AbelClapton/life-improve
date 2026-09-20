@@ -8,16 +8,33 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const since = new Date();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const since = new Date(today);
   since.setDate(since.getDate() - 6);
-  since.setHours(0, 0, 0, 0);
-  const { data: completedTasks } = await supabase
-    .from('tasks')
-    .select('completed_at')
+  const dates = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(since);
+    date.setDate(since.getDate() + index);
+    return date.toISOString().slice(0, 10);
+  });
+  const { data: completionEvents } = await supabase
+    .from('task_completion_events')
+    .select('completed_on')
     .eq('user_id', user.id)
-    .not('completed_at', 'is', null)
-    .gte('completed_at', since.toISOString());
-  const total = completedTasks?.length || 0;
+    .gte('completed_on', dates[0])
+    .lte('completed_on', dates[6]);
+  const counts = dates.map(date => completionEvents?.filter(event => event.completed_on === date).length || 0);
+  const total = counts.reduce((sum, count) => sum + count, 0);
+  const { data: points } = await supabase.from('user_points').select('points').eq('user_id', user.id).maybeSingle();
+  const { data: allCompletionEvents } = await supabase.from('task_completion_events').select('completed_on').eq('user_id', user.id);
+  const allDates = new Set(allCompletionEvents?.map(event => event.completed_on));
+  let streak = 0;
+  const streakCursor = new Date(today);
+  if (!allDates.has(streakCursor.toISOString().slice(0, 10))) streakCursor.setDate(streakCursor.getDate() - 1);
+  while (allDates.has(streakCursor.toISOString().slice(0, 10))) {
+    streak += 1;
+    streakCursor.setDate(streakCursor.getDate() - 1);
+  }
 
   return (
     <div>
@@ -28,9 +45,14 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
       </header>
       <div className="workspace-grid">
         <section className="panel"><span className="eyebrow">{t('week_label')}</span><p className="metric-value">{total}</p><p className="muted-copy">{t('completed_tasks')}</p></section>
-        <section className="panel"><span className="eyebrow">{t('streak_label')}</span><p className="metric-value">0</p><p className="muted-copy">{t('streak_placeholder')}</p></section>
+        <section className="panel"><span className="eyebrow">{t('streak_label')}</span><p className="metric-value">{streak}</p><p className="muted-copy">{t('streak_days')}</p></section>
       </div>
-      <section className="panel mt-5"><div className="panel-heading"><h2 className="panel-title">{t('coming_title')}</h2></div><p className="muted-copy">{t('coming_copy')}</p></section>
+      <section className="panel mt-5">
+        <div className="panel-heading"><h2 className="panel-title">{t('week_chart')}</h2><span className="eyebrow">{t('points')}: {points?.points || 0}</span></div>
+        <div className="weekly-chart">
+          {dates.map((date, index) => <div className="chart-column" key={date}><span className="chart-value">{counts[index]}</span><div className="chart-bar-track"><div className="chart-bar" style={{ height: `${Math.max(counts[index] * 24, counts[index] ? 12 : 4)}px` }} /></div><span className="chart-label">{new Date(`${date}T12:00:00`).toLocaleDateString(locale, { weekday: 'short' })}</span></div>)}
+        </div>
+      </section>
     </div>
   );
 }

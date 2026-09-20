@@ -94,9 +94,9 @@
     "week_label": "This week",
     "completed_tasks": "tasks completed",
     "streak_label": "Current streak",
-    "streak_placeholder": "Streak tracking arrives with points.",
-    "coming_title": "More progress signals",
-    "coming_copy": "Weekly bars, area summaries, points, and achievements are next."
+    "streak_days": "consecutive active days",
+    "week_chart": "Weekly completions",
+    "points": "Points"
   },
   "Settings": {
     "eyebrow": "Make it yours",
