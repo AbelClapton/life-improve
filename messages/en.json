@@ -119,8 +119,10 @@
     "title": "Calendar",
     "subtitle": "See the tasks that have a place in your week.",
     "week": "Next seven days",
+    "today": "Today",
     "completed": "Completed",
     "pending": "Pending",
+    "empty_day": "No tasks",
     "empty": "No scheduled tasks this week.",
     "add_task": "Add a task"
   },

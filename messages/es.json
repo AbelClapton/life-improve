@@ -119,8 +119,10 @@
     "title": "Calendario",
     "subtitle": "Mira las tareas que ya tienen un lugar en tu semana.",
     "week": "Próximos siete días",
+    "today": "Hoy",
     "completed": "Completada",
     "pending": "Pendiente",
+    "empty_day": "Sin tareas",
     "empty": "No hay tareas programadas esta semana.",
     "add_task": "Añadir tarea"
   },
