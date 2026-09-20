@@ -1,5 +1,14 @@
-const CACHE_NAME = 'mi-dia-shell-v1'
-const APP_SHELL = ['/es', '/en', '/icon.svg']
+const CACHE_NAME = 'mi-dia-shell-v3'
+const APP_SHELL = ['/offline.html', '/offline-en.html', '/icon-192.svg', '/icon-512.svg', '/icon-maskable.svg']
+const STATIC_PATHS = new Set(['/manifest.webmanifest', '/icon-192.svg', '/icon-512.svg', '/icon-maskable.svg'])
+
+function isCacheableAsset(url) {
+  return url.pathname.startsWith('/_next/static/') || STATIC_PATHS.has(url.pathname)
+}
+
+function getOfflineFallback(url) {
+  return caches.match(url.pathname.startsWith('/en') ? '/offline-en.html' : '/offline.html')
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)))
@@ -7,15 +16,22 @@ self.addEventListener('install', (event) => {
 })
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim())
+  event.waitUntil(
+    caches.keys().then((cacheNames) => Promise.all(
+      cacheNames.filter((cacheName) => cacheName.startsWith('mi-dia-') && cacheName !== CACHE_NAME).map((cacheName) => caches.delete(cacheName)),
+    )).then(() => self.clients.claim()),
+  )
 })
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return
+  const requestUrl = new URL(event.request.url)
+  if (requestUrl.origin !== self.location.origin) return
   if (event.request.mode === 'navigate') {
-    event.respondWith(fetch(event.request))
+    event.respondWith(fetch(event.request).catch(() => getOfflineFallback(requestUrl)))
     return
   }
+  if (!isCacheableAsset(requestUrl)) return
   event.respondWith(
     caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
       const copy = response.clone()
