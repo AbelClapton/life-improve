@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
 import { createArea, deleteArea, signOut, updateProfile } from '@/app/actions';
 
@@ -7,7 +8,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
   const t = await getTranslations('Settings');
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) redirect(`/${locale}/login`);
   const { data: profile } = await supabase.from('profiles').select('username, display_name, timezone, theme, notifications_enabled').eq('id', user.id).single();
   const { data: areas } = await supabase.from('areas').select('id, name, color, icon, goal').eq('user_id', user.id).order('name');
 

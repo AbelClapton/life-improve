@@ -5,11 +5,20 @@ import { revalidatePaths } from '@/lib/cache'
 import { withUser } from '@/lib/auth-wrapper'
 import { getDateInTimeZone, isValidTimeZone, localDateTimeToUtc } from '@/lib/date'
 
-const topThreeLimitMessage = 'You can only choose three top priorities.'
+const topThreeLimitError = 'top_three_limit'
+
+function mapTopThreeError(message: string) {
+  return {
+    'TOP_THREE_LIMIT': 'top_three_limit',
+    'Task not found.': 'task_not_found',
+    'Completed tasks cannot be selected as a top priority.': 'completed_task_top_three',
+    'Top priority not found.': 'top_three_not_found',
+  }[message] || 'unable_to_save'
+}
 
 export const createTask = async (locale: string, formData: FormData) =>
   await withUser(async (user, supabase) => {
-    const title = formData.get('title') as string
+    const title = String(formData.get('title') || '').trim()
     const description = formData.get('description') as string
     const notes = formData.get('notes') as string
     const areaId = formData.get('area_id') as string
@@ -20,11 +29,24 @@ export const createTask = async (locale: string, formData: FormData) =>
     const isTopThree = formData.get('is_top_three') === 'on'
     const recurrence = formData.get('recurrence') as string
     const is_reminder = formData.get('is_reminder') === 'on'
+    if (!title) return { error: 'task_title_required' }
+    const parsedDuration = durationMin ? Number(durationMin) : null
+    if (parsedDuration !== null && (!Number.isInteger(parsedDuration) || parsedDuration < 1)) return { error: 'duration_invalid' }
+    if (areaId) {
+      const { data: area, error: areaError } = await supabase
+        .from('areas')
+        .select('id')
+        .eq('id', areaId)
+        .eq('user_id', user.id)
+        .maybeSingle()
+      if (areaError) return { error: 'unable_to_save' }
+      if (!area) return { error: 'area_not_found' }
+    }
     const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single()
     const timeZone = profile?.timezone || 'Europe/Madrid'
     const dueAt = due_at ? localDateTimeToUtc(due_at, timeZone) : null
     const startAt = start_at ? localDateTimeToUtc(start_at, timeZone) : null
-    if ((due_at && !dueAt) || (start_at && !startAt)) return { error: 'The selected date or time is invalid.' }
+    if ((due_at && !dueAt) || (start_at && !startAt)) return { error: 'invalid_datetime' }
 
     const { error } = await supabase
       .from('tasks')
@@ -37,13 +59,73 @@ export const createTask = async (locale: string, formData: FormData) =>
         priority: priority || 'medium',
         due_at: dueAt,
         start_at: startAt,
-        duration_min: durationMin ? Number(durationMin) : null,
+        duration_min: parsedDuration,
         is_top_three: isTopThree,
         recurrence: recurrence || 'none',
         is_reminder,
       })
 
-    if (error) return { error: error.message === 'TOP_THREE_LIMIT' ? topThreeLimitMessage : error.message }
+    if (error) return { error: error.message === 'TOP_THREE_LIMIT' ? topThreeLimitError : 'unable_to_save' }
+    revalidatePaths([`/${locale}`, `/${locale}/tasks`, `/${locale}/calendar`, `/${locale}/progress`])
+    return { success: true }
+  })
+
+export const updateTask = async (locale: string, taskId: string, formData: FormData) =>
+  await withUser(async (user, supabase) => {
+    const title = String(formData.get('title') || '').trim()
+    const notes = String(formData.get('notes') || '').trim()
+    const areaId = String(formData.get('area_id') || '')
+    const priority = String(formData.get('priority') || 'medium')
+    const due_at = String(formData.get('due_at') || '')
+    const start_at = String(formData.get('start_at') || '')
+    const durationMin = String(formData.get('duration_min') || '')
+    const recurrence = String(formData.get('recurrence') || 'none')
+    const is_reminder = formData.get('is_reminder') === 'on'
+
+    if (!title) return { error: 'task_title_required' }
+    const parsedDuration = durationMin ? Number(durationMin) : null
+    if (parsedDuration !== null && (!Number.isInteger(parsedDuration) || parsedDuration < 1)) {
+      return { error: 'duration_invalid' }
+    }
+
+    if (areaId) {
+      const { data: area, error: areaError } = await supabase
+        .from('areas')
+        .select('id')
+        .eq('id', areaId)
+        .eq('user_id', user.id)
+        .maybeSingle()
+      if (areaError) return { error: 'unable_to_save' }
+      if (!area) return { error: 'area_not_found' }
+    }
+
+    const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single()
+    const timeZone = profile?.timezone || 'Europe/Madrid'
+    const dueAt = due_at ? localDateTimeToUtc(due_at, timeZone) : null
+    const startAt = start_at ? localDateTimeToUtc(start_at, timeZone) : null
+    if ((due_at && !dueAt) || (start_at && !startAt)) return { error: 'invalid_datetime' }
+
+    const { data: updatedTask, error } = await supabase
+      .from('tasks')
+      .update({
+        title,
+        notes: notes || null,
+        area_id: areaId || null,
+        priority,
+        due_at: dueAt,
+        start_at: startAt,
+        duration_min: parsedDuration,
+        recurrence,
+        is_reminder,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', taskId)
+      .eq('user_id', user.id)
+      .select('id')
+      .maybeSingle()
+
+    if (error) return { error: 'unable_to_save' }
+    if (!updatedTask) return { error: 'task_not_found' }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`, `/${locale}/calendar`, `/${locale}/progress`])
     return { success: true }
   })
@@ -91,7 +173,7 @@ export const setTaskTopThree = async (locale: string, taskId: string, selected: 
       should_select: selected,
     })
 
-    if (error) return { error: error.message === 'TOP_THREE_LIMIT' ? topThreeLimitMessage : error.message }
+    if (error) return { error: mapTopThreeError(error.message) }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
     return { success: true }
   })
@@ -103,7 +185,7 @@ export const moveTaskTopThree = async (locale: string, taskId: string, direction
       move_direction: direction,
     })
 
-    if (error) return { error: error.message }
+    if (error) return { error: mapTopThreeError(error.message) }
     revalidatePaths([`/${locale}`, `/${locale}/tasks`])
     return { success: true }
   })

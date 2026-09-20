@@ -1,8 +1,11 @@
 import { getTranslations } from 'next-intl/server';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClientServer } from '@/lib/supabase-server';
-import { createTask, toggleTask, deleteTask } from '../../actions';
+import { toggleTask, deleteTask } from '../../actions';
 import { TopThreeControls } from '@/app/components/top-three-controls';
+import { TaskEditDialog } from '@/app/components/task-edit-dialog';
+import { TaskCreateForm } from '@/app/components/task-create-form';
 
 type SearchParam = string | string[] | undefined;
 
@@ -29,7 +32,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
   const t = await getTranslations('Tasks');
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) redirect(`/${locale}/login`);
   const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single();
   const timeZone = profile?.timezone || 'Europe/Madrid';
 
@@ -50,6 +53,37 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
     .select('id, name, color')
     .eq('user_id', user.id)
     .order('name', { ascending: true });
+  const editLabels = {
+    title: t('edit_task'),
+    taskTitle: t('form.title'),
+    notes: t('form.description'),
+    area: t('form.area'),
+    noArea: t('form.no_area'),
+    priority: t('form.priority'),
+    high: t('form.high'),
+    medium: t('form.medium'),
+    low: t('form.low'),
+    dueDate: t('form.due_date'),
+    startTime: t('form.start_time'),
+    duration: t('form.duration'),
+    recurrence: t('form.recurrence'),
+    none: t('form.none'),
+    daily: t('form.daily'),
+    weekly: t('form.weekly'),
+    monthly: t('form.monthly'),
+    reminder: t('form.reminder'),
+    close: t('close'),
+    cancel: t('cancel'),
+    save: t('save'),
+    saving: t('saving'),
+    edit: t('edit'),
+    error: t('unable_to_save'),
+    titleRequired: t('errors.title_required'),
+    durationInvalid: t('errors.duration_invalid'),
+    invalidDate: t('errors.invalid_datetime'),
+    areaNotFound: t('errors.area_not_found'),
+    taskNotFound: t('errors.task_not_found'),
+  };
 
   return (
     <div>
@@ -62,67 +96,21 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
       {/* Add Task Form */}
       <section className="panel mb-8">
         <div className="panel-heading"><h2 className="panel-title">{t('add_new')}</h2></div>
-        <form action={async (formData) => {
-          await createTask(locale, formData);
-        }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="field-label">{t('form.title')}</label>
-            <input name="title" required className="field-input" placeholder={t('form.title_placeholder')} />
-          </div>
-          <div className="space-y-2">
-            <label className="field-label">{t('form.due_date')}</label>
-            <input name="due_at" type="datetime-local" className="field-input" defaultValue={initialDueAt} />
-          </div>
-          <div className="md:col-span-2 space-y-2">
-            <label className="field-label">{t('form.description')}</label>
-            <textarea name="description" className="field-input" placeholder={t('form.description_placeholder')} />
-          </div>
-          <div className="space-y-2">
-            <label className="field-label" htmlFor="area_id">{t('form.area')}</label>
-            <select name="area_id" id="area_id" className="field-input" defaultValue="">
-              <option value="">{t('form.no_area')}</option>
-              {areas?.map(area => <option key={area.id} value={area.id}>{area.name}</option>)}
-            </select>
-          </div>
-          <div className="space-y-2">
-            <label className="field-label" htmlFor="priority">{t('form.priority')}</label>
-            <select name="priority" id="priority" className="field-input" defaultValue="medium">
-              <option value="high">{t('form.high')}</option>
-              <option value="medium">{t('form.medium')}</option>
-              <option value="low">{t('form.low')}</option>
-            </select>
-          </div>
-          <div className="space-y-2">
-            <label className="field-label" htmlFor="start_at">{t('form.start_time')}</label>
-            <input name="start_at" id="start_at" type="datetime-local" className="field-input" />
-          </div>
-          <div className="space-y-2">
-            <label className="field-label" htmlFor="duration_min">{t('form.duration')}</label>
-            <input name="duration_min" id="duration_min" type="number" min="1" className="field-input" placeholder="30" />
-          </div>
-          <div className="space-y-2">
-            <label className="field-label" htmlFor="recurrence">{t('form.recurrence')}</label>
-            <select name="recurrence" id="recurrence" className="field-input" defaultValue="none">
-              <option value="none">{t('form.none')}</option>
-              <option value="daily">{t('form.daily')}</option>
-              <option value="weekly">{t('form.weekly')}</option>
-              <option value="monthly">{t('form.monthly')}</option>
-            </select>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 md:col-span-2">
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" name="is_top_three" />
-              {t('form.top_three')}
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" name="is_reminder" id="is_reminder" />
-              {t('form.reminder')}
-            </label>
-          </div>
-          <button type="submit" className="primary-button md:col-span-2">
-            {t('form.submit')}
-          </button>
-        </form>
+        <TaskCreateForm
+          locale={locale}
+          areas={areas || []}
+          initialDueAt={initialDueAt}
+          labels={{
+            title: t('form.title'), titlePlaceholder: t('form.title_placeholder'), dueDate: t('form.due_date'),
+            description: t('form.description'), descriptionPlaceholder: t('form.description_placeholder'),
+            area: t('form.area'), noArea: t('form.no_area'), priority: t('form.priority'), high: t('form.high'),
+            medium: t('form.medium'), low: t('form.low'), startTime: t('form.start_time'), duration: t('form.duration'),
+            recurrence: t('form.recurrence'), none: t('form.none'), daily: t('form.daily'), weekly: t('form.weekly'),
+            monthly: t('form.monthly'), topThree: t('form.top_three'), reminder: t('form.reminder'), submit: t('form.submit'),
+            saving: t('saving'), error: t('unable_to_save'), titleRequired: t('errors.title_required'),
+            durationInvalid: t('errors.duration_invalid'), invalidDate: t('errors.invalid_datetime'), areaNotFound: t('errors.area_not_found'), topThreeLimit: t('top_three_limit'),
+          }}
+        />
       </section>
 
       {/* Task List */}
@@ -145,18 +133,18 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
               <div key={task.id} className="list-row">
                 <div className="flex items-center gap-3">
                   <form action={async () => {
-                    await toggleTask(locale, task.id, !task.completed_at)
+                    await toggleTask(locale, task.id, !(task.status === 'completed' || task.completed_at))
                   }}>
                     <button
                       type="submit"
-                      className={`task-check ${task.completed_at ? 'task-check-done' : ''}`}
-                      aria-label={task.completed_at ? t('mark_pending') : t('mark_done')}
+                      className={`task-check ${task.status === 'completed' || task.completed_at ? 'task-check-done' : ''}`}
+                      aria-label={task.status === 'completed' || task.completed_at ? t('mark_pending') : t('mark_done')}
                     >
-                      {task.completed_at ? '✓' : ''}
+                      {task.status === 'completed' || task.completed_at ? '✓' : ''}
                     </button>
                   </form>
                   <div className="flex flex-col">
-                    <p className={task.completed_at ? 'line-through text-gray-400' : 'font-medium'}>
+                    <p className={task.status === 'completed' || task.completed_at ? 'line-through text-gray-400' : 'font-medium'}>
                       {task.title}
                     </p>
                     {task.due_at && (
@@ -173,13 +161,24 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
                 <TopThreeControls
                   locale={locale}
                   taskId={task.id}
-                  selected={task.is_top_three && task.status !== 'completed'}
+                  selected={task.is_top_three && task.status !== 'completed' && !task.completed_at}
                   position={task.top_three_position}
                   addLabel={t('add_top_three')}
                   removeLabel={t('remove_top_three')}
                   moveUpLabel={t('move_up')}
                   moveDownLabel={t('move_down')}
                   limitError={t('top_three_limit')}
+                  taskNotFoundError={t('errors.task_not_found')}
+                  completedTaskError={t('errors.completed_task_top_three')}
+                  topThreeNotFoundError={t('errors.top_three_not_found')}
+                  unableToSaveError={t('unable_to_save')}
+                />
+                <TaskEditDialog
+                  locale={locale}
+                  task={task}
+                  areas={areas || []}
+                  timeZone={timeZone}
+                  labels={editLabels}
                 />
                 <div className="task-actions">
                   <form action={async () => { await deleteTask(locale, task.id) }}>

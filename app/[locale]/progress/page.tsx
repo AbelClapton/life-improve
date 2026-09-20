@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
 import { getDateInTimeZone } from '@/lib/date';
 
@@ -7,7 +8,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
   const t = await getTranslations('Progress');
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) redirect(`/${locale}/login`);
 
   const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single();
   const today = getDateInTimeZone(new Date(), profile?.timezone || 'Europe/Madrid');

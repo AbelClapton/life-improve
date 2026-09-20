@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import { moveTaskTopThree, setTaskTopThree } from '@/app/actions'
 
@@ -14,6 +15,10 @@ type TopThreeControlsProps = {
   moveUpLabel: string
   moveDownLabel: string
   limitError: string
+  taskNotFoundError: string
+  completedTaskError: string
+  topThreeNotFoundError: string
+  unableToSaveError: string
 }
 
 export function TopThreeControls({
@@ -26,15 +31,28 @@ export function TopThreeControls({
   moveUpLabel,
   moveDownLabel,
   limitError,
+  taskNotFoundError,
+  completedTaskError,
+  topThreeNotFoundError,
+  unableToSaveError,
 }: TopThreeControlsProps) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   function run(action: () => Promise<{ success?: boolean; error?: string }>) {
     setError(null)
     startTransition(async () => {
       const result = await action()
-      if (result.error) setError(result.error === 'You can only choose three top priorities.' ? limitError : result.error)
+      const messages: Record<string, string> = {
+        top_three_limit: limitError,
+        task_not_found: taskNotFoundError,
+        completed_task_top_three: completedTaskError,
+        top_three_not_found: topThreeNotFoundError,
+        unable_to_save: unableToSaveError,
+      }
+      if (result.error) setError(messages[result.error] || unableToSaveError)
+      else router.refresh()
     })
   }
 

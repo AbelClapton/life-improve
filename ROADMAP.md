@@ -26,8 +26,8 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 
 ### Parcial
 
-- [ ] El dashboard ya es el punto de partida de “Hoy”, pero aún falta captura rápida, selección editable del Top 3 y feedback rico.
-- [ ] Existe un perfil mínimo; faltan nombre visible, zona horaria, tema, áreas y preferencias.
+- [x] El dashboard ya es el punto de partida de “Hoy”, con captura rápida, selección/reordenación del Top 3 y estados básicos de error.
+- [x] Existe un perfil mínimo con nombre visible, zona horaria, tema, áreas y preferencias.
 - [ ] Existe `is_reminder`; faltan permisos, programación y entrega de notificaciones.
 - [ ] La UI es responsive, pero aún no tiene la shell mobile-first final.
 - [ ] `description` se conserva por compatibilidad y se copia a `notes`; falta completar la transición en formularios y lecturas.
@@ -62,9 +62,9 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 - [x] Mostrar anillo de progreso diario.
 - [x] Mostrar Top 3 y timeline ordenado.
 - [x] Mostrar tareas pendientes sin fecha.
-- [ ] Crear captura rápida en modal con autofocus.
-- [ ] Permitir seleccionar, editar y reordenar el Top 3.
-- [ ] Añadir filtros por área, prioridad y estado.
+- [x] Crear captura rápida en modal con autofocus.
+- [x] Permitir seleccionar, editar y reordenar el Top 3.
+- [x] Añadir filtros por área, prioridad y estado.
 
 **Criterio de salida:** completar una tarea actualiza la lista y el porcentaje sin perder contexto ni afectar datos de otro usuario.
 
@@ -72,18 +72,19 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 
 - [ ] Añadir posponer a mañana, elegir fecha y eliminar mediante gesto/menú accesible.
 - [ ] Añadir recurrencia diaria, semanal y mensual.
-- [ ] Añadir tachado, confetti al completar el Top 3, háptica opcional y estados de error.
+- [ ] Añadir tachado, confetti al completar el Top 3 y háptica opcional.
+- [x] Mostrar estados básicos de error.
 - [ ] Otorgar puntos de forma idempotente y actualizar rachas por fecha local.
-- [ ] Crear formulario de review diaria de un minuto.
+- [x] Crear formulario de review diaria de un minuto.
 
 **Riesgos:** doble asignación de puntos, cambios de zona horaria, accesibilidad de gestos y sincronización de tareas recurrentes.
 
 ### Fase 4: Calendario
 
-- [ ] Vista semanal en móvil.
-- [ ] Vista mensual en escritorio.
-- [ ] Navegar a un día y crear/editar tareas desde ese contexto.
-- [ ] Mostrar carga diaria y colores de áreas.
+- [x] Vista semanal en móvil.
+- [x] Vista mensual en escritorio.
+- [x] Navegar a un día y crear/editar tareas desde ese contexto.
+- [x] Mostrar carga diaria y colores de áreas.
 
 **Criterio de salida:** el mismo dato de tarea se representa igual en Hoy, Calendario y la captura rápida.
 
@@ -96,11 +97,11 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 
 ### Fase 6: Ajustes
 
-- [ ] Perfil: nombre visible y zona horaria.
-- [ ] Gestión de áreas con color, icono y objetivo.
-- [ ] Tema claro, oscuro y automático.
-- [ ] Activar/desactivar recordatorios.
-- [ ] Cerrar sesión.
+- [x] Perfil: nombre visible y zona horaria.
+- [x] Gestión de áreas con color, icono y objetivo.
+- [x] Tema claro, oscuro y automático.
+- [x] Activar/desactivar recordatorios.
+- [x] Cerrar sesión.
 
 ### Fase 7: PWA y notificaciones
 

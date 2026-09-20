@@ -31,8 +31,8 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   const datedTasks = todaysTasks.filter(task => task.due_at);
   const completedCount = datedTasks.filter(task => task.status === 'completed' || task.completed_at).length;
   const progress = datedTasks.length === 0 ? 0 : Math.round((completedCount / datedTasks.length) * 100);
-  const topThree = todaysTasks.filter(task => task.is_top_three && task.status !== 'completed').slice(0, 3);
-  const pendingTasks = todaysTasks.filter(task => !task.due_at && task.status !== 'completed');
+  const topThree = todaysTasks.filter(task => task.is_top_three && task.status !== 'completed' && !task.completed_at).slice(0, 3);
+  const pendingTasks = todaysTasks.filter(task => !task.due_at && task.status !== 'completed' && !task.completed_at);
   const { data: dailyReview } = await supabase
     .from('daily_reviews')
     .select('intention, mood, energy, wins, blockers, tomorrow_top_three')
@@ -86,21 +86,26 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
             <ul className="space-y-3">
               {todaysTasks.filter(task => task.due_at).map(task => (
                 <li key={task.id} className="list-row">
+                  {(() => {
+                    const isCompleted = task.status === 'completed' || !!task.completed_at
+                    return <>
                   <form action={async () => {
-                    await toggleTask(locale, task.id, !task.completed_at)
+                    await toggleTask(locale, task.id, !isCompleted)
                   }}>
                     <button
                       type="submit"
-                      className={`task-check ${task.completed_at ? 'task-check-done' : ''}`}
-                      aria-label={task.completed_at ? t('mark_pending') : t('mark_done')}
+                      className={`task-check ${isCompleted ? 'task-check-done' : ''}`}
+                      aria-label={isCompleted ? t('mark_pending') : t('mark_done')}
                     >
-                      {task.completed_at ? '✓' : ''}
+                      {isCompleted ? '✓' : ''}
                     </button>
                   </form>
-                  <span className={task.completed_at ? 'line-through muted-copy' : ''}>
+                  <span className={isCompleted ? 'line-through muted-copy' : ''}>
                     {task.title}
                   </span>
                   <span className="muted-copy">{new Date(task.due_at).toLocaleTimeString(locale, { timeZone, hour: 'numeric', minute: '2-digit' })}</span>
+                    </>
+                  })()}
                 </li>
               ))}
             </ul>
@@ -155,6 +160,11 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
           priorityMedium: t('quick_priority_medium'),
           priorityLow: t('quick_priority_low'),
           topThree: t('quick_top_three'),
+          topThreeLimit: t('top_three_limit'),
+          titleRequired: t('errors.title_required'),
+          durationInvalid: t('errors.duration_invalid'),
+          invalidDate: t('errors.invalid_datetime'),
+          areaNotFound: t('errors.area_not_found'),
           saving: t('quick_saving'),
           save: t('quick_save'),
           unableToSave: t('quick_unable_to_save'),

@@ -14,6 +14,11 @@ type QuickCaptureLabels = {
   priorityMedium: string
   priorityLow: string
   topThree: string
+  topThreeLimit: string
+  titleRequired: string
+  durationInvalid: string
+  invalidDate: string
+  areaNotFound: string
   saving: string
   save: string
   unableToSave: string
@@ -39,7 +44,15 @@ export function QuickCapture({ locale, label, labels }: { locale: string; label:
     startTransition(async () => {
       const result = await createTask(locale, formData)
       if ('error' in result) {
-        setError(result.error ?? labels.unableToSave)
+        const messages: Record<string, string> = {
+          task_title_required: labels.titleRequired,
+          duration_invalid: labels.durationInvalid,
+          invalid_datetime: labels.invalidDate,
+          area_not_found: labels.areaNotFound,
+          top_three_limit: labels.topThreeLimit,
+          unable_to_save: labels.unableToSave,
+        }
+        setError(messages[result.error || ''] || labels.unableToSave)
         return
       }
       closeDialog()
@@ -77,7 +90,7 @@ export function QuickCapture({ locale, label, labels }: { locale: string; label:
           <label className="quick-capture-check">
             <input type="checkbox" name="is_top_three" /> {labels.topThree}
           </label>
-          {error && <p className="quick-capture-error">{error}</p>}
+          {error && <p className="quick-capture-error" role="alert">{error}</p>}
           <button className="primary-button" type="submit" disabled={isPending}>
             {isPending ? labels.saving : labels.save}
           </button>

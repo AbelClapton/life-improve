@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
 import { createHabit, toggleHabitLog, deleteHabit } from '../../actions';
 import { getDateInTimeZone } from '@/lib/date';
@@ -9,7 +10,7 @@ export default async function HabitsPage({ params }: { params: Promise<{ locale:
   const common = await getTranslations('Common');
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) redirect(`/${locale}/login`);
 
   const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single();
   const today = getDateInTimeZone(new Date(), profile?.timezone || 'Europe/Madrid');

@@ -11,12 +11,12 @@ type AuthHandler<Args extends unknown[], R> = (
 export async function withUser<Args extends unknown[], R>(
   handler: AuthHandler<Args, R>,
   ...args: Args
-): Promise<R> {
+): Promise<R | { error: 'unauthorized' }> {
   const supabase = await createClientServer()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    throw new Error('Unauthorized')
+    return { error: 'unauthorized' }
   }
 
   return handler(user, supabase, ...args)

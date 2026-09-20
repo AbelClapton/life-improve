@@ -1,7 +1,9 @@
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
 import { getDateInTimeZone } from '@/lib/date';
+import { TaskEditDialog } from '@/app/components/task-edit-dialog';
 
 type CalendarView = 'week' | 'month';
 type SearchParam = string | string[] | undefined;
@@ -34,9 +36,10 @@ export default async function CalendarPage({ params, searchParams }: { params: P
   const { locale } = await params;
   const query = await searchParams;
   const t = await getTranslations('Calendar');
+  const taskT = await getTranslations('Tasks');
   const supabase = await createClientServer();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) redirect(`/${locale}/login`);
 
   const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single();
   const timeZone = profile?.timezone || 'Europe/Madrid';
@@ -57,12 +60,48 @@ export default async function CalendarPage({ params, searchParams }: { params: P
   queryEnd.setUTCDate(queryEnd.getUTCDate() + 1);
   const { data: tasks } = await supabase
     .from('tasks')
-    .select('id, title, due_at, status, areas(name, color)')
+    .select('id, title, notes, area_id, priority, due_at, start_at, duration_min, recurrence, is_reminder, status, completed_at, areas(name, color)')
     .eq('user_id', user.id)
     .gte('due_at', queryStart.toISOString())
     .lt('due_at', queryEnd.toISOString())
     .not('due_at', 'is', null)
     .order('due_at', { ascending: true });
+  const { data: areas } = await supabase
+    .from('areas')
+    .select('id, name')
+    .eq('user_id', user.id)
+    .order('name', { ascending: true });
+  const editLabels = {
+    title: taskT('edit_task'),
+    taskTitle: taskT('form.title'),
+    notes: taskT('form.description'),
+    area: taskT('form.area'),
+    noArea: taskT('form.no_area'),
+    priority: taskT('form.priority'),
+    high: taskT('form.high'),
+    medium: taskT('form.medium'),
+    low: taskT('form.low'),
+    dueDate: taskT('form.due_date'),
+    startTime: taskT('form.start_time'),
+    duration: taskT('form.duration'),
+    recurrence: taskT('form.recurrence'),
+    none: taskT('form.none'),
+    daily: taskT('form.daily'),
+    weekly: taskT('form.weekly'),
+    monthly: taskT('form.monthly'),
+    reminder: taskT('form.reminder'),
+    close: taskT('close'),
+    cancel: taskT('cancel'),
+    save: taskT('save'),
+    saving: taskT('saving'),
+    edit: taskT('edit'),
+    error: taskT('unable_to_save'),
+    titleRequired: taskT('errors.title_required'),
+    durationInvalid: taskT('errors.duration_invalid'),
+    invalidDate: taskT('errors.invalid_datetime'),
+    areaNotFound: taskT('errors.area_not_found'),
+    taskNotFound: taskT('errors.task_not_found'),
+  };
   const scheduledTasks = (tasks ?? []).filter(task => displayDays.includes(getDateInTimeZone(new Date(task.due_at), timeZone)));
   const tasksByDate = new Map<string, typeof scheduledTasks>();
   for (const task of scheduledTasks) {
@@ -107,16 +146,26 @@ export default async function CalendarPage({ params, searchParams }: { params: P
                 >
                   {t('add_task')}
                 </Link>
-                {dayTasks.length > 0 ? dayTasks.map(task => (
+                {dayTasks.length > 0 ? dayTasks.map(task => {
+                  const area = Array.isArray(task.areas) ? task.areas[0] : task.areas;
+                  return (
                   <article key={task.id} className="calendar-task">
-                    <span className="area-dot" style={{ background: task.areas?.[0]?.color || 'var(--accent)' }} />
+                    <span className="area-dot" style={{ background: area?.color || 'var(--accent)' }} />
                     <div>
                       <strong>{task.title}</strong>
                       <p className="muted-copy">{new Date(task.due_at).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit', timeZone })}</p>
                     </div>
-                    <span className="muted-copy">{task.status === 'completed' ? t('completed') : t('pending')}</span>
+                    <span className="muted-copy">{task.status === 'completed' || task.completed_at ? t('completed') : t('pending')}</span>
+                    <TaskEditDialog
+                      locale={locale}
+                      task={task}
+                      areas={areas || []}
+                      timeZone={timeZone}
+                      labels={editLabels}
+                    />
                   </article>
-                )) : <p className="muted-copy calendar-empty-day">{t('empty_day')}</p>}
+                  );
+                }) : <p className="muted-copy calendar-empty-day">{t('empty_day')}</p>}
               </div>
             );
           })}
