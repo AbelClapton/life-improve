@@ -26,7 +26,17 @@
     "no_area": "Sin área",
     "quick_capture": "Nueva tarea",
     "mark_done": "Marcar como hecha",
-    "mark_pending": "Marcar como pendiente"
+    "mark_pending": "Marcar como pendiente",
+    "review_title": "Cierre del día",
+    "review_eyebrow": "Un minuto para ti",
+    "intention": "Intención",
+    "intention_placeholder": "¿Qué importa hoy?",
+    "mood": "Ánimo",
+    "energy": "Energía",
+    "wins": "Qué salió bien",
+    "blockers": "Qué te frenó",
+    "tomorrow_top_three": "Top 3 de mañana",
+    "save_review": "Guardar cierre"
   },
   "Tasks": {
     "title": "Tareas",

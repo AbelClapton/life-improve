@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
-import { toggleTask } from '@/app/actions';
+import { saveDailyReview, toggleTask } from '@/app/actions';
 import { QuickCapture } from '@/app/components/quick-capture';
 
 export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
@@ -25,6 +25,12 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   const progress = todaysTasks.length === 0 ? 0 : Math.round((completedCount / todaysTasks.length) * 100);
   const topThree = todaysTasks.filter(task => task.is_top_three).slice(0, 3);
   const pendingTasks = todaysTasks.filter(task => !task.due_at && task.status !== 'completed');
+  const { data: dailyReview } = await supabase
+    .from('daily_reviews')
+    .select('intention, mood, energy, wins, blockers, tomorrow_top_three')
+    .eq('user_id', user.id)
+    .eq('review_date', today)
+    .maybeSingle();
 
   return (
     <div>
@@ -114,6 +120,20 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
           )}
         </section>
       </div>
+      <section className="panel daily-review-panel">
+        <div className="panel-heading"><h2 className="panel-title">{t('review_title')}</h2><span className="eyebrow">{t('review_eyebrow')}</span></div>
+        <form action={async (formData) => { await saveDailyReview(locale, today, formData); }} className="daily-review-form">
+          <label className="field-label">{t('intention')}<input name="intention" className="field-input" defaultValue={dailyReview?.intention || ''} placeholder={t('intention_placeholder')} /></label>
+          <div className="review-scale-grid">
+            <label className="field-label">{t('mood')}<select name="mood" className="field-input" defaultValue={dailyReview?.mood || ''}><option value="">-</option>{[1, 2, 3, 4, 5].map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+            <label className="field-label">{t('energy')}<select name="energy" className="field-input" defaultValue={dailyReview?.energy || ''}><option value="">-</option>{[1, 2, 3, 4, 5].map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+          </div>
+          <label className="field-label">{t('wins')}<textarea name="wins" className="field-input" defaultValue={dailyReview?.wins || ''} /></label>
+          <label className="field-label">{t('blockers')}<textarea name="blockers" className="field-input" defaultValue={dailyReview?.blockers || ''} /></label>
+          <label className="field-label">{t('tomorrow_top_three')}<textarea name="tomorrow_top_three" className="field-input" defaultValue={dailyReview?.tomorrow_top_three || ''} /></label>
+          <button className="primary-button" type="submit">{t('save_review')}</button>
+        </form>
+      </section>
       <QuickCapture locale={locale} label={t('quick_capture')} />
     </div>
   );

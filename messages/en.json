@@ -26,7 +26,17 @@
     "no_area": "No area",
     "quick_capture": "New task",
     "mark_done": "Mark Done",
-    "mark_pending": "Mark as pending"
+    "mark_pending": "Mark as pending",
+    "review_title": "Daily review",
+    "review_eyebrow": "One quiet minute",
+    "intention": "Intention",
+    "intention_placeholder": "What matters today?",
+    "mood": "Mood",
+    "energy": "Energy",
+    "wins": "What went well",
+    "blockers": "What got in the way",
+    "tomorrow_top_three": "Tomorrow's Top 3",
+    "save_review": "Save review"
   },
   "Tasks": {
     "title": "Tasks",

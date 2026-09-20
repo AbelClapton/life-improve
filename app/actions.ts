@@ -113,6 +113,25 @@ export const deleteTask = async (locale: string, taskId: string) =>
     return { success: true }
   })
 
+export const saveDailyReview = async (locale: string, reviewDate: string, formData: FormData) =>
+  await withUser(async (user, supabase) => {
+    const { error } = await supabase.from('daily_reviews').upsert({
+      user_id: user.id,
+      review_date: reviewDate,
+      intention: String(formData.get('intention') || '').trim() || null,
+      mood: Number(formData.get('mood')) || null,
+      energy: Number(formData.get('energy')) || null,
+      wins: String(formData.get('wins') || '').trim() || null,
+      blockers: String(formData.get('blockers') || '').trim() || null,
+      tomorrow_top_three: String(formData.get('tomorrow_top_three') || '').trim() || null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,review_date' })
+
+    if (error) return { error: error.message }
+    revalidatePaths([`/${locale}`])
+    return { success: true }
+  })
+
 export const updateProfile = async (locale: string, formData: FormData) =>
   await withUser(async (user, supabase) => {
     const displayName = String(formData.get('display_name') || '').trim()
