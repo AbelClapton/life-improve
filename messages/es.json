@@ -118,7 +118,8 @@
     "area_color": "Color del área",
     "area_goal": "Meta opcional",
     "add_area": "Añadir área",
-    "delete_area": "Eliminar"
+    "delete_area": "Eliminar",
+    "sign_out": "Cerrar sesión"
   },
   "Login": {
     "title": "Organizador de vida",

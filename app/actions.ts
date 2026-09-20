@@ -1,5 +1,6 @@
 'use server'
 
+import { redirect } from 'next/navigation'
 import { revalidatePaths } from '@/lib/cache'
 import { withUser } from '@/lib/auth-wrapper'
 
@@ -125,6 +126,12 @@ export const deleteArea = async (locale: string, areaId: string) =>
     if (error) return { error: error.message }
     revalidatePaths([`/${locale}/settings`, `/${locale}/tasks`])
     return { success: true }
+  })
+
+export const signOut = async (locale: string) =>
+  await withUser(async (_user, supabase) => {
+    await supabase.auth.signOut()
+    redirect(`/${locale}/login`)
   })
 
 export const createHabit = async (locale: string, formData: FormData) =>

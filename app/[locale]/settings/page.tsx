@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { createClientServer } from '@/lib/supabase-server';
-import { createArea, deleteArea, updateProfile } from '@/app/actions';
+import { createArea, deleteArea, signOut, updateProfile } from '@/app/actions';
 
 export default async function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -41,6 +41,9 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
           {areas?.map(area => <div key={area.id} className="list-row"><span className="area-label"><span className="area-dot" style={{ background: area.color }} />{area.name}</span><form action={async () => { await deleteArea(locale, area.id); }}><button className="danger-action">{t('delete_area')}</button></form></div>)}
         </div>
       </section>
+      <form action={async () => { await signOut(locale); }} className="mt-5">
+        <button className="danger-action" type="submit">{t('sign_out')}</button>
+      </form>
     </div>
   );
 }

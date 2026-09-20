@@ -118,7 +118,8 @@
     "area_color": "Area color",
     "area_goal": "Optional goal",
     "add_area": "Add area",
-    "delete_area": "Delete"
+    "delete_area": "Delete",
+    "sign_out": "Sign out"
   },
   "Login": {
     "title": "Life Organizer",
