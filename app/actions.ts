@@ -130,6 +130,32 @@ export const updateTask = async (locale: string, taskId: string, formData: FormD
     return { success: true }
   })
 
+export const postponeTask = async (locale: string, taskId: string) =>
+  await withUser(async (user, supabase) => {
+    const { data: profile } = await supabase.from('profiles').select('timezone').eq('id', user.id).single()
+    const timeZone = profile?.timezone || 'Europe/Madrid'
+    const today = getDateInTimeZone(new Date(), timeZone)
+    const tomorrow = new Date(`${today}T12:00:00Z`)
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
+    const dueAt = localDateTimeToUtc(`${tomorrow.toISOString().slice(0, 10)}T09:00`, timeZone)
+    if (!dueAt) return { error: 'invalid_datetime' }
+
+    const { data: postponedTask, error } = await supabase
+      .from('tasks')
+      .update({ due_at: dueAt, status: 'postponed', completed_at: null, updated_at: new Date().toISOString() })
+      .eq('id', taskId)
+      .eq('user_id', user.id)
+      .neq('status', 'completed')
+      .is('completed_at', null)
+      .select('id')
+      .maybeSingle()
+
+    if (error) return { error: 'unable_to_save' }
+    if (!postponedTask) return { error: 'task_not_found' }
+    revalidatePaths([`/${locale}`, `/${locale}/tasks`, `/${locale}/calendar`, `/${locale}/progress`])
+    return { success: true }
+  })
+
 export const toggleTask = async (locale: string, taskId: string, completed: boolean) =>
   await withUser(async (user, supabase) => {
     const { data: profile, error: profileError } = await supabase

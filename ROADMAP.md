@@ -70,7 +70,8 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 
 ### Fase 3: Interacciones y cierre del día
 
-- [ ] Añadir posponer a mañana, elegir fecha y eliminar mediante gesto/menú accesible.
+- [x] Añadir posponer a mañana.
+- [ ] Permitir elegir fecha y eliminar mediante gesto/menú accesible.
 - [ ] Añadir recurrencia diaria, semanal y mensual.
 - [ ] Añadir tachado, confetti al completar el Top 3 y háptica opcional.
 - [x] Mostrar estados básicos de error.
@@ -90,8 +91,8 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 
 ### Fase 5: Progreso
 
-- [ ] Gráfico semanal de tareas completadas por día.
-- [ ] Racha actual y puntos acumulados.
+- [x] Gráfico semanal de tareas completadas por día.
+- [x] Racha actual y puntos acumulados.
 - [ ] Logros: primera tarea, racha de 3 días, semana perfecta y 10 tareas en un día.
 - [ ] Resumen semanal por área.
 

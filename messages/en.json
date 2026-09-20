@@ -37,6 +37,7 @@
     "quick_priority_low": "Low",
     "quick_top_three": "Add to Top 3",
     "top_three_limit": "You can only choose three top priorities.",
+    "postpone": "Postpone to tomorrow",
     "quick_saving": "Saving...",
     "quick_save": "Save task",
     "quick_unable_to_save": "Unable to save the task.",
@@ -101,6 +102,7 @@
     "move_up": "Move priority up",
     "move_down": "Move priority down",
     "top_three_limit": "You can only choose three top priorities.",
+    "postpone": "Postpone to tomorrow",
     "filters": {
       "area": "Area",
       "priority": "Priority",

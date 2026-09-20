@@ -6,6 +6,7 @@ import { toggleTask, deleteTask } from '../../actions';
 import { TopThreeControls } from '@/app/components/top-three-controls';
 import { TaskEditDialog } from '@/app/components/task-edit-dialog';
 import { TaskCreateForm } from '@/app/components/task-create-form';
+import { TaskPostponeButton } from '@/app/components/task-postpone-button';
 
 type SearchParam = string | string[] | undefined;
 
@@ -181,6 +182,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
                   labels={editLabels}
                 />
                 <div className="task-actions">
+                  {task.status !== 'completed' && !task.completed_at && <TaskPostponeButton locale={locale} taskId={task.id} label={t('postpone')} errorLabel={t('unable_to_save')} />}
                   <form action={async () => { await deleteTask(locale, task.id) }}>
                     <button className="danger-action">{common('actions.delete')}</button>
                   </form>

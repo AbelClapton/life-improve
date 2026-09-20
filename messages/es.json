@@ -37,6 +37,7 @@
     "quick_priority_low": "Baja",
     "quick_top_three": "Añadir al Top 3",
     "top_three_limit": "Solo puedes elegir tres prioridades principales.",
+    "postpone": "Posponer para mañana",
     "quick_saving": "Guardando...",
     "quick_save": "Guardar tarea",
     "quick_unable_to_save": "No se pudo guardar la tarea.",
@@ -101,6 +102,7 @@
     "move_up": "Subir prioridad",
     "move_down": "Bajar prioridad",
     "top_three_limit": "Solo puedes elegir tres prioridades principales.",
+    "postpone": "Posponer para mañana",
     "filters": {
       "area": "Área",
       "priority": "Prioridad",
