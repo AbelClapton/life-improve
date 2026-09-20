@@ -106,7 +106,7 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 
 ### Fase 7: PWA y notificaciones
 
-- [ ] Manifest con iconos 192, 512 y maskable; `display: standalone` y `theme_color` índigo.
+- [x] Manifest con iconos 192, 512 y maskable; `display: standalone` y `theme_color` índigo.
 - [ ] Service worker para cachear el app shell.
 - [ ] Definir datos guardados y límites del modo offline antes de implementar sincronización.
 - [ ] Solicitar permiso de notificaciones de forma explícita.
