@@ -163,7 +163,15 @@
     "streak_label": "Racha actual",
     "streak_days": "días activos consecutivos",
     "week_chart": "Completadas esta semana",
-    "points": "Puntos"
+    "points": "Puntos",
+    "achievements_title": "Logros",
+    "achievements_empty": "Completa tareas para conseguir tu primer logro.",
+    "achievements": {
+      "first_task": { "name": "Primera tarea", "description": "Completa tu primera tarea." },
+      "three_day_streak": { "name": "Racha de tres días", "description": "Completa al menos una tarea durante tres días consecutivos." },
+      "perfect_week": { "name": "Semana perfecta", "description": "Completa tres tareas cada día durante siete días consecutivos." },
+      "ten_tasks_day": { "name": "Diez en un día", "description": "Completa diez tareas en un día." }
+    }
   },
   "Settings": {
     "eyebrow": "Hazlo tuyo",

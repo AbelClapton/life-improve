@@ -163,7 +163,15 @@
     "streak_label": "Current streak",
     "streak_days": "consecutive active days",
     "week_chart": "Weekly completions",
-    "points": "Points"
+    "points": "Points",
+    "achievements_title": "Achievements",
+    "achievements_empty": "Complete tasks to earn your first achievement.",
+    "achievements": {
+      "first_task": { "name": "First task", "description": "Complete your first task." },
+      "three_day_streak": { "name": "Three-day streak", "description": "Complete at least one task for three consecutive days." },
+      "perfect_week": { "name": "Perfect week", "description": "Complete three tasks on each of seven consecutive days." },
+      "ten_tasks_day": { "name": "Ten in a day", "description": "Complete ten tasks on one day." }
+    }
   },
   "Settings": {
     "eyebrow": "Make it yours",

@@ -29,6 +29,11 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
   const counts = dates.map(date => completionEvents?.filter(event => event.completed_on === date).length || 0);
   const total = counts.reduce((sum, count) => sum + count, 0);
   const { data: points } = await supabase.from('user_points').select('points').eq('user_id', user.id).maybeSingle();
+  const { data: earnedAchievements } = await supabase
+    .from('user_achievements')
+    .select('earned_at, achievements(key, points)')
+    .eq('user_id', user.id)
+    .order('earned_at', { ascending: true });
   const { data: allCompletionEvents } = await supabase.from('task_completion_events').select('completed_on').eq('user_id', user.id);
   const allDates = new Set(allCompletionEvents?.map(event => event.completed_on));
   let streak = 0;
@@ -55,6 +60,18 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
         <div className="weekly-chart">
           {dates.map((date, index) => <div className="chart-column" key={date}><span className="chart-value">{counts[index]}</span><div className="chart-bar-track"><div className="chart-bar" style={{ height: `${Math.max(counts[index] * 24, counts[index] ? 12 : 4)}px` }} /></div><span className="chart-label">{new Date(`${date}T12:00:00`).toLocaleDateString(locale, { weekday: 'short' })}</span></div>)}
         </div>
+      </section>
+      <section className="panel mt-5">
+        <div className="panel-heading"><h2 className="panel-title">{t('achievements_title')}</h2><span className="eyebrow">{earnedAchievements?.length || 0}</span></div>
+        {earnedAchievements && earnedAchievements.length > 0 ? (
+          <div className="achievement-list">
+            {earnedAchievements.map(achievement => {
+              const details = Array.isArray(achievement.achievements) ? achievement.achievements[0] : achievement.achievements;
+              const key = details?.key;
+              return key ? <article className="achievement-item" key={key}><div><h3>{t(`achievements.${key}.name`)}</h3><p className="muted-copy">{t(`achievements.${key}.description`)}</p></div><span className="eyebrow">+{details?.points || 0}</span></article> : null;
+            })}
+          </div>
+        ) : <p className="muted-copy">{t('achievements_empty')}</p>}
       </section>
     </div>
   );

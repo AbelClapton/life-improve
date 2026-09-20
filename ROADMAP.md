@@ -93,7 +93,7 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 
 - [x] Gráfico semanal de tareas completadas por día.
 - [x] Racha actual y puntos acumulados.
-- [ ] Logros: primera tarea, racha de 3 días, semana perfecta y 10 tareas en un día.
+- [x] Logros: primera tarea, racha de 3 días, semana perfecta y 10 tareas en un día.
 - [ ] Resumen semanal por área.
 
 ### Fase 6: Ajustes
