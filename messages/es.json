@@ -8,6 +8,10 @@
       "new_task": "Nueva tarea"
     },
     "navigation_label": "Navegación principal",
+    "loading": "Cargando tu día...",
+    "error_title": "No se pudo cargar esta vista",
+    "error_description": "Algo salió mal al cargar tus datos. Inténtalo de nuevo.",
+    "retry": "Reintentar",
     "actions": {
       "delete": "Eliminar",
       "mark_done": "Marcar como hecha",

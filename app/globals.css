@@ -181,6 +181,50 @@ textarea:focus-visible {
   padding: 3.5rem 1.5rem 5rem;
 }
 
+.route-state {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  margin: 12vh auto 0;
+  max-width: 32rem;
+  padding: 2rem;
+}
+
+.route-state-mark {
+  align-items: center;
+  background: var(--surface-muted);
+  border-radius: 50%;
+  color: var(--accent-dark);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  height: 3rem;
+  justify-content: center;
+  width: 3rem;
+}
+
+.route-state-spinner {
+  animation: route-state-spin 800ms linear infinite;
+  border: 3px solid var(--surface-muted);
+  border-top-color: var(--accent);
+}
+
+.route-state-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0.25rem 0 0;
+}
+
+.route-state-action {
+  margin-top: 1rem;
+}
+
+@keyframes route-state-spin {
+  to { transform: rotate(360deg); }
+}
+
 .page-heading {
   margin-bottom: 2.25rem;
 }

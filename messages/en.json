@@ -8,6 +8,10 @@
       "new_task": "New task"
     },
     "navigation_label": "Primary navigation",
+    "loading": "Loading your day...",
+    "error_title": "This view could not load",
+    "error_description": "Something went wrong while loading your data. Try again.",
+    "retry": "Try again",
     "actions": {
       "delete": "Delete",
       "mark_done": "Mark Done",
