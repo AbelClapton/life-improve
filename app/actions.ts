@@ -262,6 +262,35 @@ export const updateProfile = async (locale: string, formData: FormData) =>
     return { success: true }
   })
 
+export const savePushSubscription = async (subscription: { endpoint: string; p256dh: string; auth: string; locale: string }) =>
+  await withUser(async (user, supabase) => {
+    let endpoint: URL
+    try { endpoint = new URL(subscription.endpoint) } catch { return { error: 'invalid_subscription' } }
+    const keyPattern = /^[A-Za-z0-9_-]+$/
+    const allowedPushHost = endpoint.hostname === 'fcm.googleapis.com'
+      || endpoint.hostname === 'web.push.apple.com'
+      || endpoint.hostname === 'updates.push.services.mozilla.com'
+      || endpoint.hostname.endsWith('.push.services.mozilla.com')
+      || endpoint.hostname.endsWith('.notify.windows.com')
+    let p256dhLength = 0
+    let authLength = 0
+    try {
+      p256dhLength = Buffer.from(subscription.p256dh, 'base64url').length
+      authLength = Buffer.from(subscription.auth, 'base64url').length
+    } catch { return { error: 'invalid_subscription' } }
+    const p256dhBytes = Buffer.from(subscription.p256dh, 'base64url')
+    if (endpoint.protocol !== 'https:' || endpoint.username || endpoint.password || endpoint.port || !allowedPushHost || !['en', 'es'].includes(subscription.locale) || !keyPattern.test(subscription.p256dh) || !keyPattern.test(subscription.auth) || p256dhLength !== 65 || authLength !== 16 || p256dhBytes[0] !== 4) return { error: 'invalid_subscription' }
+    const { error } = await supabase.from('push_subscriptions').upsert({
+      user_id: user.id,
+      endpoint: subscription.endpoint,
+      p256dh: subscription.p256dh,
+      auth: subscription.auth,
+      locale: subscription.locale,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,endpoint' })
+    return error ? { error: 'unable_to_save' } : { success: true }
+  })
+
 export const createArea = async (locale: string, formData: FormData) =>
   await withUser(async (user, supabase) => {
     const name = String(formData.get('name') || '').trim()

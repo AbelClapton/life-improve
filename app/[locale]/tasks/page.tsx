@@ -16,7 +16,7 @@ function firstSearchParam(value: SearchParam) {
   return Array.isArray(value) ? value[0] : value;
 }
 
-export default async function TasksPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ area?: SearchParam; priority?: SearchParam; status?: SearchParam; due_at?: SearchParam; calendar_view?: SearchParam; calendar_date?: SearchParam }> }) {
+export default async function TasksPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ area?: SearchParam; priority?: SearchParam; status?: SearchParam; due_at?: SearchParam; calendar_view?: SearchParam; calendar_date?: SearchParam; task_id?: SearchParam }> }) {
   const { locale } = await params;
   const common = await getTranslations('Common');
   const rawFilters = await searchParams;
@@ -29,6 +29,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
   const initialDueAt = requestedDueAt && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(requestedDueAt) ? requestedDueAt : '';
   const calendarView = firstSearchParam(rawFilters.calendar_view);
   const calendarDate = firstSearchParam(rawFilters.calendar_date);
+  const requestedTaskId = firstSearchParam(rawFilters.task_id);
   const calendarHref = calendarView && calendarDate
     ? `/${locale}/calendar?view=${calendarView === 'month' ? 'month' : 'week'}&date=${calendarDate}`
     : `/${locale}/calendar`;
@@ -46,6 +47,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
     .from('tasks')
     .select('*, areas(name, color)')
     .eq('user_id', user.id)
+  if (requestedTaskId && /^[0-9a-f-]{36}$/i.test(requestedTaskId)) taskQuery = taskQuery.eq('id', requestedTaskId);
   if (filters.area === '__none__') taskQuery = taskQuery.is('area_id', null);
   else if (filters.area) taskQuery = taskQuery.eq('area_id', filters.area);
   if (filters.priority) taskQuery = taskQuery.eq('priority', filters.priority);

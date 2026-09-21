@@ -23,6 +23,28 @@ self.addEventListener('activate', (event) => {
   )
 })
 
+self.addEventListener('push', (event) => {
+  const payload = event.data?.json() || { title: 'Mi Día', body: 'Tienes un recordatorio pendiente.' }
+  event.waitUntil(self.registration.showNotification(payload.title || 'Mi Día', {
+    body: payload.body || '',
+    icon: '/icon-192.svg',
+    badge: '/icon-192.svg',
+    data: { taskId: payload.taskId, locale: payload.locale === 'en' ? 'en' : 'es' },
+  }))
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+    const existing = windowClients.find((client) => 'focus' in client)
+    const locale = event.notification.data?.locale || existing?.url.match(/\/(en|es)(?:\/|$)/)?.[1] || 'es'
+    const taskId = event.notification.data?.taskId
+    const taskPath = `/${locale}/tasks${taskId ? `?task_id=${encodeURIComponent(taskId)}` : ''}`
+    if (existing && 'navigate' in existing) return existing.navigate(taskPath).then(() => existing.focus())
+    return clients.openWindow(taskPath)
+  }))
+})
+
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return
   const requestUrl = new URL(event.request.url)
