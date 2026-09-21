@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
 import { createArea, deleteArea, signOut, updateProfile } from '@/app/actions';
+import { NotificationPermission } from '@/app/components/notification-permission';
 
 export default async function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -27,6 +28,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
           <label className="field-label">{t('timezone')}<input name="timezone" className="field-input" defaultValue={profile?.timezone || 'Europe/Madrid'} /></label>
           <label className="field-label">{t('theme')}<select name="theme" className="field-input" defaultValue={profile?.theme || 'system'}><option value="system">{t('theme_system')}</option><option value="light">{t('theme_light')}</option><option value="dark">{t('theme_dark')}</option></select></label>
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="notifications_enabled" defaultChecked={profile?.notifications_enabled ?? true} />{t('notifications')}</label>
+          <NotificationPermission />
           <button className="primary-button" type="submit">{t('save')}</button>
         </form>
       </section>
