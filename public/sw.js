@@ -58,7 +58,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(fetch(event.request).then((response) => {
       if (response.ok) {
         const copy = response.clone()
-        event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(cacheKey, copy)))
+        return caches.open(CACHE_NAME).then((cache) => cache.put(cacheKey, copy)).then(() => response)
       }
       return response
     }).catch(() => caches.match(cacheKey).then((cached) => cached || getOfflineFallback(requestUrl))))
