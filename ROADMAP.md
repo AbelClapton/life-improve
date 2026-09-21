@@ -29,7 +29,8 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 - [x] El dashboard ya es el punto de partida de “Hoy”, con captura rápida, selección/reordenación del Top 3 y estados básicos de error.
 - [x] Existe un perfil mínimo con nombre visible, zona horaria, tema, áreas y preferencias.
 - [x] Existe `is_reminder`, permisos de navegador, almacenamiento de suscripciones y núcleo de entrega Web Push.
-- [ ] Falta publicar el workflow de cron y verificar una entrega real en la Edge Function ya desplegada y probada.
+- [x] Workflow de cron publicado y probado contra la Edge Function desplegada.
+- [ ] Falta verificar una entrega real en navegador mediante Web Push.
 - [ ] La UI es responsive, pero aún no tiene la shell mobile-first final.
 - [x] `description` se conserva por compatibilidad; formularios y lecturas usan `notes` y los datos existentes fueron migrados.
 - [x] La autenticación funciona con contraseña y magic link; Google depende de configurar OAuth en Supabase.
