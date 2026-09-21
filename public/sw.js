@@ -1,5 +1,5 @@
 const CACHE_NAME = 'mi-dia-shell-v3'
-const APP_SHELL = ['/offline.html', '/offline-en.html', '/icon-192.svg', '/icon-512.svg', '/icon-maskable.svg']
+const APP_SHELL = ['/offline.html', '/offline-en.html', '/manifest.webmanifest', '/icon-192.svg', '/icon-512.svg', '/icon-maskable.svg']
 const STATIC_PATHS = new Set(['/manifest.webmanifest', '/icon-192.svg', '/icon-512.svg', '/icon-maskable.svg'])
 
 function isCacheableAsset(url) {

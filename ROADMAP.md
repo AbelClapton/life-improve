@@ -108,7 +108,7 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 
 - [x] Manifest con iconos 192, 512 y maskable; `display: standalone` y `theme_color` índigo.
 - [ ] Service worker para cachear el app shell (fallback offline y assets estáticos implementados; falta cachear una shell navegable).
-- [ ] Definir datos guardados y límites del modo offline antes de implementar sincronización.
+- [x] Definir datos guardados y límites del modo offline antes de implementar sincronización. Ver `OFFLINE.md`.
 - [ ] Solicitar permiso de notificaciones de forma explícita.
 - [ ] Programar recordatorios, resumen matutino y cierre nocturno mediante proveedor/cron.
 
