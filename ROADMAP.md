@@ -39,7 +39,7 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 
 ### Fase 0: Foundation de Mi Día
 
-- [ ] Definir navegación: Hoy, Calendario, Progreso, Ajustes y acción rápida central.
+- [x] Definir navegación: Hoy, Calendario, Progreso, Ajustes y acción rápida central, con estado activo accesible.
 - [ ] Consolidar tokens visuales, estados de carga/error/vacío y accesibilidad.
 - [x] Definir cálculo de “hoy” usando la zona horaria del perfil.
 - [ ] Mantener hábitos fuera de las primeras pantallas de Mi Día, sin eliminar su código existente.

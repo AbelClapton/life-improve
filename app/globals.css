@@ -160,6 +160,11 @@ textarea:focus-visible {
   color: var(--foreground);
 }
 
+.nav-link-current {
+  background: var(--surface-muted);
+  color: var(--foreground);
+}
+
 .nav-link-action {
   background: var(--accent);
   color: white;
@@ -887,6 +892,10 @@ textarea:focus-visible {
     min-height: 2.8rem;
     min-width: 2.75rem;
     text-decoration: none;
+  }
+
+  .mobile-nav-link-current {
+    color: var(--accent-dark);
   }
 
   .mobile-nav-link:hover {
