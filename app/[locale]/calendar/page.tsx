@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClientServer } from '@/lib/supabase-server';
-import { getDateInTimeZone } from '@/lib/date';
+import { getDateInTimeZone, getUtcStartForDate, getUtcStartForNextDate } from '@/lib/date';
 import { TaskEditDialog } from '@/app/components/task-edit-dialog';
 
 type CalendarView = 'week' | 'month';
@@ -54,16 +54,14 @@ export default async function CalendarPage({ params, searchParams }: { params: P
     : anchorDate;
   const dayCount = view === 'month' ? 42 : 7;
   const displayDays = Array.from({ length: dayCount }, (_, index) => shiftDate(rangeStart, index));
-  const queryStart = new Date(`${rangeStart}T00:00:00Z`);
-  queryStart.setUTCDate(queryStart.getUTCDate() - 1);
-  const queryEnd = new Date(`${displayDays[displayDays.length - 1]}T23:59:59Z`);
-  queryEnd.setUTCDate(queryEnd.getUTCDate() + 1);
+  const queryStart = getUtcStartForDate(rangeStart, timeZone);
+  const queryEnd = getUtcStartForNextDate(displayDays[displayDays.length - 1], timeZone);
   const { data: tasks } = await supabase
     .from('tasks')
     .select('id, title, notes, area_id, priority, due_at, start_at, duration_min, recurrence, is_reminder, status, completed_at, areas(name, color)')
     .eq('user_id', user.id)
-    .gte('due_at', queryStart.toISOString())
-    .lt('due_at', queryEnd.toISOString())
+    .gte('due_at', queryStart || new Date(0).toISOString())
+    .lt('due_at', queryEnd || new Date(8640000000000000).toISOString())
     .not('due_at', 'is', null)
     .order('due_at', { ascending: true });
   const { data: areas } = await supabase
