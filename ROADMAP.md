@@ -30,8 +30,8 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 - [x] Existe un perfil mínimo con nombre visible, zona horaria, tema, áreas y preferencias.
 - [ ] Existe `is_reminder`; faltan permisos, programación y entrega de notificaciones.
 - [ ] La UI es responsive, pero aún no tiene la shell mobile-first final.
-- [ ] `description` se conserva por compatibilidad y se copia a `notes`; falta completar la transición en formularios y lecturas.
-- [ ] La autenticación funciona con contraseña; magic link es la siguiente opción recomendada y Google depende de configurar OAuth en Supabase.
+- [x] `description` se conserva por compatibilidad; formularios y lecturas usan `notes` y los datos existentes fueron migrados.
+- [x] La autenticación funciona con contraseña y magic link; Google depende de configurar OAuth en Supabase.
 
 ## Fases de construcción
 
