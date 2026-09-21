@@ -40,12 +40,12 @@ export default async function HabitsPage({ params }: { params: Promise<{ locale:
         <div className="panel-heading"><h2 className="panel-title">{t('add_new')}</h2></div>
         <form action={addHabit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-2 space-y-2">
-            <label className="field-label">{t('form.name')}</label>
-            <input name="name" required className="field-input" placeholder={t('form.name_placeholder')} />
+            <label className="field-label" htmlFor="habit-name">{t('form.name')}</label>
+            <input id="habit-name" name="name" required className="field-input" placeholder={t('form.name_placeholder')} />
           </div>
           <div className="space-y-2">
-            <label className="field-label">{t('form.frequency')}</label>
-            <select name="frequency" className="field-input">
+            <label className="field-label" htmlFor="habit-frequency">{t('form.frequency')}</label>
+            <select id="habit-frequency" name="frequency" className="field-input">
               <option value="daily">{t('form.daily')}</option>
               <option value="weekly">{t('form.weekly')}</option>
             </select>
