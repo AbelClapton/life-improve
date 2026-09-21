@@ -113,7 +113,7 @@ Mi Día es una PWA mobile-first para organización personal diaria. Está pensad
 - [x] Definir datos guardados y límites del modo offline antes de implementar sincronización. Ver `OFFLINE.md`.
 - [x] Solicitar permiso de notificaciones de forma explícita.
 - [x] Programar recordatorios mediante Web Push, Edge Function y cron.
-- [ ] Resumen matutino y cierre nocturno mediante proveedor/cron.
+- [x] Resumen matutino y cierre nocturno mediante Web Push, zona horaria del perfil y cron idempotente.
 
 **Criterio de salida:** la app es instalable, el shell puede abrirse sin red y las notificaciones fallan de forma visible y recuperable cuando no hay permisos.
 
