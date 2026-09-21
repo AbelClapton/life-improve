@@ -10,6 +10,10 @@ function getOfflineFallback(url) {
   return caches.match(url.pathname.startsWith('/en') ? '/offline-en.html' : '/offline.html')
 }
 
+function getNavigationCacheKey(requestUrl) {
+  return new Request(`${requestUrl.origin}${requestUrl.pathname}`)
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)))
   self.skipWaiting()
@@ -50,7 +54,14 @@ self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url)
   if (requestUrl.origin !== self.location.origin) return
   if (event.request.mode === 'navigate') {
-    event.respondWith(fetch(event.request).catch(() => getOfflineFallback(requestUrl)))
+    const cacheKey = getNavigationCacheKey(requestUrl)
+    event.respondWith(fetch(event.request).then((response) => {
+      if (response.ok) {
+        const copy = response.clone()
+        event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(cacheKey, copy)))
+      }
+      return response
+    }).catch(() => caches.match(cacheKey).then((cached) => cached || getOfflineFallback(requestUrl))))
     return
   }
   if (!isCacheableAsset(requestUrl)) return
