@@ -33,6 +33,10 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   const completedCount = datedTasks.filter(task => task.status === 'completed' || task.completed_at).length;
   const progress = datedTasks.length === 0 ? 0 : Math.round((completedCount / datedTasks.length) * 100);
   const topThree = todaysTasks.filter(task => task.is_top_three && task.status !== 'completed' && !task.completed_at).slice(0, 3);
+  async function saveReview(formData: FormData) {
+    'use server';
+    await saveDailyReview(locale, today, formData);
+  }
   const pendingTasks = todaysTasks.filter(task => !task.due_at && task.status !== 'completed' && !task.completed_at);
   const { data: dailyReview } = await supabase
     .from('daily_reviews')
@@ -112,7 +116,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
       </div>
       <section className="panel daily-review-panel">
         <div className="panel-heading"><h2 className="panel-title">{t('review_title')}</h2><span className="eyebrow">{t('review_eyebrow')}</span></div>
-        <form action={async (formData) => { await saveDailyReview(locale, today, formData); }} className="daily-review-form">
+        <form action={saveReview} className="daily-review-form">
           <label className="field-label">{t('intention')}<input name="intention" className="field-input" defaultValue={dailyReview?.intention || ''} placeholder={t('intention_placeholder')} /></label>
           <div className="review-scale-grid">
             <label className="field-label">{t('mood')}<select name="mood" className="field-input" defaultValue={dailyReview?.mood || ''}><option value="">-</option>{[1, 2, 3, 4, 5].map(value => <option key={value} value={value}>{value}</option>)}</select></label>

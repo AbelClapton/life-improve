@@ -23,6 +23,10 @@ export default async function HabitsPage({ params }: { params: Promise<{ locale:
     ...h,
     completedToday: h.habit_logs?.some((log: { completed_at: string | null }) => log.completed_at === today)
   }));
+  async function addHabit(formData: FormData) {
+    'use server';
+    await createHabit(locale, formData);
+  }
 
   return (
     <div>
@@ -34,9 +38,7 @@ export default async function HabitsPage({ params }: { params: Promise<{ locale:
       {/* Add Habit Form */}
       <section className="panel mb-8">
         <div className="panel-heading"><h2 className="panel-title">{t('add_new')}</h2></div>
-        <form action={async (formData) => {
-          await createHabit(locale, formData);
-        }} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <form action={addHabit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-2 space-y-2">
             <label className="field-label">{t('form.name')}</label>
             <input name="name" required className="field-input" placeholder={t('form.name_placeholder')} />
@@ -62,9 +64,7 @@ export default async function HabitsPage({ params }: { params: Promise<{ locale:
             habitStatuses.map(habit => (
               <div key={habit.id} className="list-row">
                 <div className="flex items-center gap-3">
-                  <form action={async () => {
-                    await toggleHabitLog(locale, habit.id, today)
-                  }}>
+                  <form action={async () => { 'use server'; await toggleHabitLog(locale, habit.id, today) }}>
                     <button
                       type="submit"
                       className={`task-check ${habit.completedToday ? 'task-check-done' : ''}`}
@@ -80,9 +80,7 @@ export default async function HabitsPage({ params }: { params: Promise<{ locale:
                     <span className="muted-copy">{habit.frequency}</span>
                   </div>
                 </div>
-                <form action={async () => {
-                  await deleteHabit(locale, habit.id)
-                }}>
+                <form action={async () => { 'use server'; await deleteHabit(locale, habit.id) }}>
                   <button className="danger-action">
                     {common('actions.delete')}
                   </button>

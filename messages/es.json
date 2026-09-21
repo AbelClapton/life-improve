@@ -93,6 +93,10 @@
       "duration_invalid": "La duración debe ser un número positivo.",
       "invalid_datetime": "La fecha o la hora seleccionada no es válida.",
       "area_not_found": "El área seleccionada no está disponible.",
+      "title_required": "El título de la tarea es obligatorio.",
+      "duration_invalid": "La duración debe ser un número positivo.",
+      "invalid_datetime": "La fecha o la hora seleccionada no es válida.",
+      "area_not_found": "El área seleccionada no está disponible.",
       "task_not_found": "La tarea ya no está disponible.",
       "completed_task_top_three": "Las tareas completadas no pueden seleccionarse como prioridad principal.",
       "top_three_not_found": "Esta prioridad principal ya no está disponible."

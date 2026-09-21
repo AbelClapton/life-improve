@@ -12,6 +12,22 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
   if (!user) redirect(`/${locale}/login`);
   const { data: profile } = await supabase.from('profiles').select('username, display_name, timezone, theme, notifications_enabled').eq('id', user.id).single();
   const { data: areas } = await supabase.from('areas').select('id, name, color, icon, goal').eq('user_id', user.id).order('name');
+  async function saveProfile(formData: FormData) {
+    'use server';
+    await updateProfile(locale, formData);
+  }
+  async function addArea(formData: FormData) {
+    'use server';
+    await createArea(locale, formData);
+  }
+  async function removeArea(areaId: string) {
+    'use server';
+    await deleteArea(locale, areaId);
+  }
+  async function logOut() {
+    'use server';
+    await signOut(locale);
+  }
 
   return (
     <div>
@@ -22,7 +38,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
       </header>
       <section className="panel mb-5">
         <div className="panel-heading"><h2 className="panel-title">{t('profile_title')}</h2></div>
-        <form action={async (formData) => { await updateProfile(locale, formData); }} className="settings-form">
+        <form action={saveProfile} className="settings-form">
           <div className="list-row"><span>{t('email')}</span><strong>{user.email}</strong></div>
           <label className="field-label">{t('display_name')}<input name="display_name" className="field-input" defaultValue={profile?.display_name || ''} /></label>
           <label className="field-label">{t('timezone')}<input name="timezone" className="field-input" defaultValue={profile?.timezone || 'Europe/Madrid'} /></label>
@@ -34,17 +50,17 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
       </section>
       <section className="panel">
         <div className="panel-heading"><h2 className="panel-title">{t('areas_title')}</h2><span className="eyebrow">{areas?.length || 0}</span></div>
-        <form action={async (formData) => { await createArea(locale, formData); }} className="settings-area-form">
+        <form action={addArea} className="settings-area-form">
           <input name="name" required className="field-input" placeholder={t('area_name')} />
           <input name="color" type="color" className="color-input" defaultValue="#6366f1" aria-label={t('area_color')} />
           <input name="goal" className="field-input" placeholder={t('area_goal')} />
           <button className="primary-button" type="submit">{t('add_area')}</button>
         </form>
         <div className="settings-list">
-          {areas?.map(area => <div key={area.id} className="list-row"><span className="area-label"><span className="area-dot" style={{ background: area.color }} />{area.name}</span><form action={async () => { await deleteArea(locale, area.id); }}><button className="danger-action">{t('delete_area')}</button></form></div>)}
+          {areas?.map(area => <div key={area.id} className="list-row"><span className="area-label"><span className="area-dot" style={{ background: area.color }} />{area.name}</span><form action={async () => { 'use server'; await removeArea(area.id); }}><button className="danger-action">{t('delete_area')}</button></form></div>)}
         </div>
       </section>
-      <form action={async () => { await signOut(locale); }} className="mt-5">
+      <form action={logOut} className="mt-5">
         <button className="danger-action" type="submit">{t('sign_out')}</button>
       </form>
     </div>
