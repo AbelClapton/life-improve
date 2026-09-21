@@ -1,0 +1,1 @@
+grant select on table public.notification_deliveries to service_role;

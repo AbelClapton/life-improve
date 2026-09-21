@@ -248,14 +248,14 @@ export const updateProfile = async (locale: string, formData: FormData) =>
 
     const { error } = await supabase
       .from('profiles')
-      .update({
+      .upsert({
+        id: user.id,
         display_name: displayName || null,
         timezone,
         theme,
         notifications_enabled: notificationsEnabled,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', user.id)
 
     if (error) return { error: error.message }
     revalidatePaths([`/${locale}/settings`, `/${locale}`, `/${locale}/calendar`])
